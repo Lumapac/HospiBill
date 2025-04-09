@@ -12,6 +12,7 @@ use Stancl\Tenancy\Events;
 use Stancl\Tenancy\Jobs;
 use Stancl\Tenancy\Listeners;
 use Stancl\Tenancy\Middleware;
+use App\Jobs\SeedTenantJob;
 
 class TenancyServiceProvider extends ServiceProvider
 {
@@ -27,6 +28,7 @@ class TenancyServiceProvider extends ServiceProvider
                 JobPipeline::make([
                     Jobs\CreateDatabase::class,
                     Jobs\MigrateDatabase::class,
+                    SeedTenantJob::class, // This is your custom job that seeds the tenant database.
                     // Jobs\SeedDatabase::class,
 
                     // Your own jobs to prepare the tenant.
