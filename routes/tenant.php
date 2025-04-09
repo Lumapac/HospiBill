@@ -8,7 +8,10 @@ use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
 use Stancl\Tenancy\Middleware\InitializeTenancyBySubdomain;
 use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
 use Stancl\Tenancy\Middleware\ScopeSessions;
-use App\Http\Controllers\App\ProfileController;
+use App\Http\Controllers\App\{
+    ProfileController,
+    UserController
+};
 
 /*
 |--------------------------------------------------------------------------
@@ -35,14 +38,14 @@ Route::middleware([
     });
 
     Route::get('/dashboard', function () {
-        return view('dashboard');
+        return view('app.dashboard');
     })->middleware(['auth', 'verified'])->name('dashboard');
 
     Route::middleware('auth')->group(function () {
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
         Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
         Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-        // Route::resource('users', TenantController::class);
+        Route::resource('users', UserController::class);
     });
 
     require __DIR__ . '/tenant-auth.php';

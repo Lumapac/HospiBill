@@ -10,7 +10,7 @@
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
 
-                    <form method="POST" action="{{ route('tenants.store') }}">
+                    <form method="POST" action="{{ route('users.store') }}">
                         @csrf
 
                         <!-- Name -->
@@ -28,15 +28,6 @@
                                 :value="old('email')" required autocomplete="username" />
                             <x-input-error :messages="$errors->get('email')" class="mt-2" />
                         </div>
-
-                        <!-- Domain Name -->
-                        <div class="mt-4">
-                            <x-input-label for="domain_name" :value="__('Domain Name')" />
-                            <x-text-input id="domain_name" class="block mt-1 w-full" type="text" name="domain_name"
-                                :value="old('domain_name')" required autofocus autocomplete="domain_name" />
-                            <x-input-error :messages="$errors->get('domain_name')" class="mt-2" />
-                        </div>
-
 
                         <!-- Password -->
                         <div class="mt-4">

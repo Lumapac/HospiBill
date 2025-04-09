@@ -6,17 +6,18 @@ use App\Models\Tenant;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rules;
 use App\Http\Controllers\Controller;
+use App\Models\User;
 
-class TenantController extends Controller
+class UserController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $tenants = Tenant::with('domains')->get();
+        $users = User::with('roles')->get();
         // dd($tenants->toArray());
-        return view('tenants.index', compact('tenants'));
+        return view('app.users.index', compact('users'));
     }
 
     /**
@@ -24,7 +25,7 @@ class TenantController extends Controller
      */
     public function create()
     {
-        return view('tenants.create');
+        return view('app.users.create');
     }
 
     /**
@@ -33,20 +34,15 @@ class TenantController extends Controller
     public function store(Request $request)
     {
         $validatedData = $request->validate([
-            'name' => 'required|string|max:255|unique:tenants',
-            'email' => 'required|email|max:255|unique:tenants',
-            'domain_name' => 'required|string|max:255|unique:domains,domain',
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255|unique:users,email',
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
 
         ]);
         // dd($validatedData);
-        $tenant = Tenant::create($validatedData);
+        User::create($validatedData);
 
-        $tenant->domains()->create([
-            'domain' => $validatedData['domain_name'] . '.' . config('app.domain'),
-        ]);
-
-        return redirect()->route('tenants.index')->with('success', 'Tenant created successfully.');
+        return redirect()->route('users.index')->with('success', 'User created successfully.');
     }
 
     /**
