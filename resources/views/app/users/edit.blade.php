@@ -32,7 +32,7 @@
                          <!-- User Role -->
                          <div class="mt-4">
                             <x-input-label  for="roles" :value="__('Roles')" />
-                            <select multiple call="" class="block mt-1 w-full" name="roles[]">
+                            <select multiple call="" class="block mt-1 w-full bg-gray-600" name="roles[]">
                                 @foreach ($roles as $role)
                                     <option value="{{ $role->id }}" @if (in_array($role->id, $user->roles->pluck('id')->toArray())) selected @endif>
                                         {{ $role->name }}</option>
