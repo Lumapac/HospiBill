@@ -1,9 +1,10 @@
 <?php
 
 namespace App\Http\Controllers\App;
-use App\Models\Role;
+use App\Mail\SendGeneratedPassword;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rules;
+use Illuminate\Support\Str;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Spatie\Permission\Models\Role as SpatieRole;
@@ -25,11 +26,11 @@ class UserController extends Controller
      */
     public function create()
     {
-        
+
         $roles = SpatieRole::get();
         return view('app.users.create', compact('roles'));
 
-        
+
     }
 
     /**
@@ -37,20 +38,26 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        // dd($request);
-
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255|unique:users,email',
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
-
+            'roles' => 'required|array',
+            'roles.*' => 'exists:roles,id',
         ]);
-        // dd($validatedData);
-        User::create($validatedData);
 
-        return redirect()->route('users.index')->with('success', 'User created successfully.');
+        $plainPassword = Str::random(10);
+        $validatedData['password'] = bcrypt($plainPassword);
+
+        $user = User::create($validatedData);
+
+        $roleNames = SpatieRole::whereIn('id', $validatedData['roles'])->pluck('name');
+        $user->assignRole($roleNames);
+
+         // Send password via email
+        Mail::to($user->email)->send(new SendGeneratedPassword($plainPassword));
+
+        return redirect()->route('users.index')->with('success', 'User created successfully. Password: ' . $plainPassword);
     }
-
     /**
      * Display the specified resource.
      */
@@ -66,7 +73,7 @@ class UserController extends Controller
     {
         $roles = SpatieRole::get();
         // dd($users->toArray());
-        return view('app.users.edit', compact('user','roles'));
+        return view('app.users.edit', compact('user', 'roles'));
 
     }
 

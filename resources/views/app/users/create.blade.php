@@ -29,37 +29,20 @@
                             <x-input-error :messages="$errors->get('email')" class="mt-2" />
                         </div>
 
-                         User Role
-                         <div class="mt-4">
-                            <x-input-label  for="roles" :value="__('Roles')" />
+                        <!-- User Role -->
+
+                        <div class="mt-4">
+                            <x-input-label for="roles" :value="__('User Roles')" />
                             <select multiple call="" class="block mt-1 w-full bg-gray-600" name="roles[]">
                                 @foreach ($roles as $role)
-                                    <option value="{{ $role->id }}" @if (in_array($role->id, old('roles', []))) selected @endif>
-                                        {{ $role->name }}</option>
+                                    <option value="{{ $role->id }}" @if (in_array($role->id, old('roles', []))) selected
+                                    @endif>
+                                        {{ $role->name }}
+                                    </option>
                                 @endforeach
                             </select>
                         </div>
-
-                        <!-- Password -->
-                        <div class="mt-4">
-                            <x-input-label for="password" :value="__('Password')" />
-
-                            <x-text-input id="password" class="block mt-1 w-full" type="password" name="password"
-                                required autocomplete="new-password" />
-
-                            <x-input-error :messages="$errors->get('password')" class="mt-2" />
-                        </div>
-
-                        <!-- Confirm Password -->
-                        <div class="mt-4">
-                            <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
-
-                            <x-text-input id="password_confirmation" class="block mt-1 w-full" type="password"
-                                name="password_confirmation" required autocomplete="new-password" />
-
-                            <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
-                        </div>
-
+                        
                         <div class="flex items-center justify-end mt-4">
                             <x-primary-button class="ms-4">
                                 {{ __('Create') }}
