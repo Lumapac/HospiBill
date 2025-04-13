@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\App;
-use App\Mail\SendGeneratedPassword;
+use App\Mail\UsersCredentialsMail;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -54,7 +54,7 @@ class UserController extends Controller
         $user->assignRole($roleNames);
 
          // Send password via email
-        Mail::to($user->email)->send(new SendGeneratedPassword($plainPassword));
+        Mail::to($user->email)->send(new UsersCredentialsMail($plainPassword));
 
         return redirect()->route('users.index')->with('success', 'User created successfully. Password: ' . $plainPassword);
     }

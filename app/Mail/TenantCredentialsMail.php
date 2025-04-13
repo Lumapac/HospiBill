@@ -3,24 +3,25 @@
 namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
-use Illuminate\Mail\Mailables\Content;
-use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class SendGeneratedPassword extends Mailable
+class TenantCredentialsMail extends Mailable
 {
     use Queueable, SerializesModels;
 
     public $password;
+    public $tenant;
+    public $domain;
 
     /**
      * Create a new message instance.
      */
-    public function __construct($password)
+    public function __construct($password, $tenant, $domain)
     {
         $this->password = $password;
+        $this->tenant = $tenant;
+        $this->domain = $domain;
     }
 
     /**
@@ -28,18 +29,13 @@ class SendGeneratedPassword extends Mailable
      */
     public function build()
     {
-        return $this->subject('Your Account Credentials')
-            ->view('emails.generated-password');
-    }
-
-    /**
-     * Get the message content definition.
-     */
-    public function content(): Content
-    {
-        return new Content(
-            view: 'emails.generated-password',
-        );
+        return $this->subject('Your Tenant Account Credentials')
+            ->view('emails.tenant-generated-password')
+            ->with([
+                'password' => $this->password,
+                'tenant' => $this->tenant,
+                'domain' => $this->domain,
+            ]);
     }
 
     /**

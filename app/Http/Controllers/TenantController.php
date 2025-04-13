@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\TenantCredentialsMail;
 use App\Models\Tenant;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rules;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Mail;
 
 class TenantController extends Controller
 {
@@ -35,16 +37,20 @@ class TenantController extends Controller
             'name' => 'required|string|max:255|unique:tenants',
             'email' => 'required|email|max:255|unique:tenants',
             'domain_name' => 'required|string|max:255|unique:domains,domain',
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
-
         ]);
+
+        $plainPassword = Str::random(10);
+        $validatedData['password'] = bcrypt($plainPassword);
 
         // dd($validatedData);
         $tenant = Tenant::create($validatedData);
 
-        $tenant->domains()->create([
+        $domain = $tenant->domains()->create([
             'domain' => $validatedData['domain_name'] . '.' . config('app.domain'),
         ]);
+
+        // Send password via email
+        Mail::to($tenant->email)->send(new TenantCredentialsMail($plainPassword, $tenant, $domain->domain));
 
         return redirect()->route('tenants.index')->with('success', 'Tenant created successfully.');
     }
