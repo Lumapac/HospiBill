@@ -52,6 +52,15 @@ class TenantController extends Controller
         // Send password via email
         Mail::to($tenant->email)->send(new TenantCredentialsMail($plainPassword, $tenant, $domain->domain));
 
+        // Check if the request is coming from the central domain's landing page
+        $referer = $request->headers->get('referer');
+        
+        if ($referer && strpos($referer, '/apply-tenant') === false && !$request->is('tenants/*')) {
+            // If not from the admin dashboard, redirect back to the landing page
+            return redirect('/')->with('success', 'Application submitted successfully! Check your email for login credentials.');
+        }
+
+        // Otherwise, redirect to the tenants index (admin dashboard)
         return redirect()->route('tenants.index')->with('success', 'Tenant created successfully.');
     }
 
