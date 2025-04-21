@@ -4,6 +4,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use App\Http\Middleware\PreventAccessFromTenants;
+use App\Http\Middleware\CheckTenantStatus;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -27,10 +28,16 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
             'central' => PreventAccessFromTenants::class,
+            'tenant.status' => CheckTenantStatus::class,
             
             'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
             'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
             'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
+        ]);
+        
+        // Add global middleware
+        $middleware->web(append: [
+            CheckTenantStatus::class
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

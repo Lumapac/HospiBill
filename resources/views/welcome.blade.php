@@ -58,7 +58,7 @@
                         Get Your Own HospiBill Instance
                     </h1>
                     <p class="mt-3 max-w-md mx-auto text-base text-indigo-100 sm:text-lg md:mt-5 md:text-xl md:max-w-3xl">
-                        Apply for a dedicated tenant space to manage your hospital billing system efficiently.
+                        Apply for a dedicated tenant space to manage your hospital billing system efficiently. All applications are reviewed by our admin team.
                     </p>
                 </div>
             </div>
@@ -118,6 +118,10 @@
                     <!-- Right Column - Application Form -->
                     <div class="bg-white dark:bg-gray-800 p-8 rounded-lg shadow">
                         <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-6">Apply for Tenancy</h2>
+                        
+                        <div class="mb-6 bg-blue-50 border-l-4 border-blue-500 text-blue-700 p-4">
+                            <p>All applications are subject to admin review. Once approved, your login credentials will be sent to your email.</p>
+                        </div>
                         
                         @if (session('success'))
                             <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6" role="alert">

@@ -2,7 +2,7 @@
     <x-slot name="header">
         <div class="flex justify-between items-center">
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-                {{ __('Create New Tenant') }}
+                {{ __('Edit Tenant') }}: {{ $tenant->name }}
             </h2>
             <a href="{{ route('tenants.index') }}" class="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300">
                 Back to List
@@ -28,8 +28,9 @@
                         </div>
                     @endif
 
-                    <form method="POST" action="{{ route('admin.tenants.store') }}">
+                    <form method="POST" action="{{ route('tenants.update', $tenant) }}">
                         @csrf
+                        @method('PATCH')
                         
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
@@ -42,7 +43,7 @@
                                     </label>
                                     <input id="name" 
                                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:text-white dark:border-gray-600"
-                                        type="text" name="name" value="{{ old('name') }}" required autofocus />
+                                        type="text" name="name" value="{{ old('name', $tenant->name) }}" required />
                                 </div>
                                 
                                 <!-- Email -->
@@ -52,31 +53,39 @@
                                     </label>
                                     <input id="email" 
                                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:text-white dark:border-gray-600"
-                                        type="email" name="email" value="{{ old('email') }}" required />
+                                        type="email" name="email" value="{{ old('email', $tenant->email) }}" required />
                                 </div>
                                 
-                                <!-- Domain Name -->
+                                <!-- Status -->
                                 <div class="mb-4">
-                                    <label for="domain_name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                                        Subdomain Name
+                                    <label for="status" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                        Status
                                     </label>
-                                    <div class="mt-1 flex rounded-md shadow-sm">
-                                        <input id="domain_name" 
-                                            class="block w-full rounded-l-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:text-white dark:border-gray-600"
-                                            type="text" name="domain_name" value="{{ old('domain_name') }}" required />
-                                        <span class="inline-flex items-center px-3 py-2 rounded-r-md border border-l-0 border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-600 text-gray-500 dark:text-gray-300">
-                                            .{{ config('app.domain') }}
-                                        </span>
-                                    </div>
+                                    <select id="status" name="status" 
+                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:text-white dark:border-gray-600"
+                                        required
+                                    >
+                                        <option value="pending" {{ old('status', $tenant->status) === 'pending' ? 'selected' : '' }}>Pending</option>
+                                        <option value="approved" {{ old('status', $tenant->status) === 'approved' ? 'selected' : '' }}>Approved</option>
+                                        <option value="rejected" {{ old('status', $tenant->status) === 'rejected' ? 'selected' : '' }}>Rejected</option>
+                                    </select>
+                                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                                        Changing status to "Approved" will generate and send new credentials to the tenant.
+                                    </p>
                                 </div>
                             </div>
                             
                             <div>
-                                <h3 class="text-lg font-medium mb-4">Additional Information</h3>
+                                <h3 class="text-lg font-medium mb-4">Admin Notes</h3>
                                 <div class="mb-4">
-                                    <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
-                                        Creating a tenant from the admin panel will set the tenant status to 'pending' by default. 
-                                        You can approve the tenant after creation to trigger email notification with login credentials.
+                                    <label for="admin_notes" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                        Notes
+                                    </label>
+                                    <textarea id="admin_notes" name="admin_notes" rows="8" 
+                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:text-white dark:border-gray-600"
+                                    >{{ old('admin_notes', $tenant->admin_notes) }}</textarea>
+                                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                                        Internal notes about this tenant (not visible to the tenant).
                                     </p>
                                 </div>
                             </div>
@@ -84,7 +93,7 @@
                         
                         <div class="flex justify-end mt-6">
                             <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">
-                                Create Tenant
+                                Update Tenant
                             </button>
                         </div>
                     </form>

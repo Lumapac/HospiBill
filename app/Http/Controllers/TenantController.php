@@ -29,47 +29,11 @@ class TenantController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        $validatedData = $request->validate([
-            'name' => 'required|string|max:255|unique:tenants',
-            'email' => 'required|email|max:255|unique:tenants',
-            'domain_name' => 'required|string|max:255|unique:domains,domain',
-        ]);
-
-        $plainPassword = Str::random(10);
-        $validatedData['password'] = bcrypt($plainPassword);
-
-        // dd($validatedData);
-        $tenant = Tenant::create($validatedData);
-
-        $domain = $tenant->domains()->create([
-            'domain' => $validatedData['domain_name'] . '.' . config('app.domain'),
-        ]);
-
-        // Send password via email
-        Mail::to($tenant->email)->send(new TenantCredentialsMail($plainPassword, $tenant, $domain->domain));
-
-        // Check if the request is coming from the central domain's landing page
-        $referer = $request->headers->get('referer');
-        
-        if ($referer && strpos($referer, '/apply-tenant') === false && !$request->is('tenants/*')) {
-            // If not from the admin dashboard, redirect back to the landing page
-            return redirect('/')->with('success', 'Application submitted successfully! Check your email for login credentials.');
-        }
-
-        // Otherwise, redirect to the tenants index (admin dashboard)
-        return redirect()->route('tenants.index')->with('success', 'Tenant created successfully.');
-    }
-
-    /**
      * Display the specified resource.
      */
     public function show(Tenant $tenant)
     {
-        //
+        return view('tenants.show', compact('tenant'));
     }
 
     /**
@@ -77,7 +41,7 @@ class TenantController extends Controller
      */
     public function edit(Tenant $tenant)
     {
-        //
+        return view('tenants.edit', compact('tenant'));
     }
 
     /**
@@ -85,7 +49,31 @@ class TenantController extends Controller
      */
     public function update(Request $request, Tenant $tenant)
     {
-        //
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255|unique:tenants,name,' . $tenant->id,
+            'email' => 'required|email|max:255|unique:tenants,email,' . $tenant->id,
+            'status' => 'required|in:pending,approved,rejected',
+            'admin_notes' => 'nullable|string',
+        ]);
+
+        $tenant->update($validatedData);
+
+        // If tenant was approved, send credentials email
+        if ($request->status === 'approved' && $tenant->wasChanged('status') && $tenant->getOriginal('status') !== 'approved') {
+            // Generate a new password if not provided
+            $plainPassword = Str::random(10);
+            $tenant->update(['password' => bcrypt($plainPassword)]);
+            
+            // Find the domain
+            $domain = $tenant->domains()->first();
+            
+            // Send email with credentials
+            if ($domain) {
+                Mail::to($tenant->email)->send(new TenantCredentialsMail($plainPassword, $tenant, $domain->domain));
+            }
+        }
+
+        return redirect()->route('tenants.index')->with('success', 'Tenant updated successfully.');
     }
 
     /**
@@ -93,6 +81,7 @@ class TenantController extends Controller
      */
     public function destroy(Tenant $tenant)
     {
-        //
+        $tenant->delete();
+        return redirect()->route('tenants.index')->with('success', 'Tenant deleted successfully.');
     }
 }

@@ -1,0 +1,91 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Models\Tenant;
+use Illuminate\Support\Str;
+use App\Mail\TenantCredentialsMail;
+use Illuminate\Support\Facades\Mail;
+
+class TenantStatusController extends Controller
+{
+    /**
+     * Store a newly created tenant in pending status.
+     */
+    public function store(Request $request)
+    {
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255|unique:tenants',
+            'email' => 'required|email|max:255|unique:tenants',
+            'domain_name' => 'required|string|max:255|unique:domains,domain',
+        ]);
+
+        $plainPassword = Str::random(10);
+        $validatedData['password'] = bcrypt($plainPassword);
+        $validatedData['status'] = 'pending'; // Set status to pending by default
+
+        // Create the tenant
+        $tenant = Tenant::create($validatedData);
+
+        // Create the domain
+        $domain = $tenant->domains()->create([
+            'domain' => $validatedData['domain_name'] . '.' . config('app.domain'),
+        ]);
+
+        // Check if the request is coming from the central domain's landing page
+        $referer = $request->headers->get('referer');
+        
+        if ($referer && strpos($referer, '/apply-tenant') === false && !$request->is('tenants/*')) {
+            // If not from the admin dashboard, redirect back to the landing page
+            return redirect('/')->with('success', 'Application submitted successfully! Your application is pending approval. Check your email for login credentials once approved.');
+        }
+
+        // Otherwise, redirect to the tenants index (admin dashboard)
+        return redirect()->route('tenants.index')->with('success', 'Tenant created successfully in pending status.');
+    }
+
+    /**
+     * Approve tenant application
+     */
+    public function approve(Tenant $tenant)
+    {
+        if ($tenant->status !== 'approved') {
+            // Generate a new password
+            $plainPassword = Str::random(10);
+            $tenant->update([
+                'status' => 'approved',
+                'password' => bcrypt($plainPassword)
+            ]);
+            
+            // Find the domain
+            $domain = $tenant->domains()->first();
+            
+            // Send email with credentials
+            if ($domain) {
+                Mail::to($tenant->email)->send(new TenantCredentialsMail($plainPassword, $tenant, $domain->domain));
+            }
+            
+            return redirect()->route('tenants.index')->with('success', 'Tenant application approved successfully.');
+        }
+        
+        return redirect()->route('tenants.index')->with('info', 'Tenant already approved.');
+    }
+    
+    /**
+     * Reject tenant application
+     */
+    public function reject(Request $request, Tenant $tenant)
+    {
+        $validatedData = $request->validate([
+            'admin_notes' => 'required|string',
+        ]);
+        
+        $tenant->update([
+            'status' => 'rejected',
+            'admin_notes' => $validatedData['admin_notes']
+        ]);
+        
+        return redirect()->route('tenants.index')->with('success', 'Tenant application rejected.');
+    }
+}
