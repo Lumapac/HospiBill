@@ -23,7 +23,7 @@ class TenantStatusController extends Controller
 
         $plainPassword = Str::random(10);
         $validatedData['password'] = bcrypt($plainPassword);
-        $validatedData['status'] = 'pending'; // Set status to pending by default
+        $validatedData['status'] = 'pending';
 
         // Create the tenant
         $tenant = Tenant::create($validatedData);
@@ -32,17 +32,8 @@ class TenantStatusController extends Controller
         $domain = $tenant->domains()->create([
             'domain' => $validatedData['domain_name'] . '.' . config('app.domain'),
         ]);
-
-        // Check if the request is coming from the central domain's landing page
-        $referer = $request->headers->get('referer');
         
-        if ($referer && strpos($referer, '/apply-tenant') === false && !$request->is('tenants/*')) {
-            // If not from the admin dashboard, redirect back to the landing page
-            return redirect('/')->with('success', 'Application submitted successfully! Your application is pending approval. Check your email for login credentials once approved.');
-        }
-
-        // Otherwise, redirect to the tenants index (admin dashboard)
-        return redirect()->route('tenants.index')->with('success', 'Tenant created successfully in pending status.');
+        return redirect('/')->with('success', 'Application submitted successfully! Your application is pending approval. Check your email for login credentials once approved.');
     }
 
     /**
@@ -72,9 +63,7 @@ class TenantStatusController extends Controller
         return redirect()->route('tenants.index')->with('info', 'Tenant already approved.');
     }
     
-    /**
-     * Reject tenant application
-     */
+
     public function reject(Request $request, Tenant $tenant)
     {
         $validatedData = $request->validate([

@@ -22,12 +22,6 @@
                         </div>
                     @endif
                     
-                    <div class="mb-6 flex justify-end">
-                        <a href="{{ route('tenants.create') }}" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">
-                            Create New Tenant
-                        </a>
-                    </div>
-                    
                     <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
                         <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
                             <thead

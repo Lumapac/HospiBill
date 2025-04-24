@@ -24,7 +24,7 @@
                             <span class="text-2xl font-bold text-indigo-600 dark:text-indigo-400">HospiBill</span>
                         </div>
                     </div>
-                    
+
                     @if (Route::has('login'))
                         <div class="flex items-center">
                             @auth
@@ -57,8 +57,10 @@
                     <h1 class="text-4xl font-extrabold text-white sm:text-5xl md:text-6xl">
                         Get Your Own HospiBill Instance
                     </h1>
-                    <p class="mt-3 max-w-md mx-auto text-base text-indigo-100 sm:text-lg md:mt-5 md:text-xl md:max-w-3xl">
-                        Apply for a dedicated tenant space to manage your hospital billing system efficiently. All applications are reviewed by our admin team.
+                    <p
+                        class="mt-3 max-w-md mx-auto text-base text-indigo-100 sm:text-lg md:mt-5 md:text-xl md:max-w-3xl">
+                        Apply for a dedicated tenant space to manage your hospital billing system efficiently. All
+                        applications are reviewed by our admin team.
                     </p>
                 </div>
             </div>
@@ -71,64 +73,76 @@
                     <!-- Left Column - Benefits -->
                     <div class="bg-white dark:bg-gray-800 p-8 rounded-lg shadow">
                         <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-6">Why Choose HospiBill?</h2>
-                        
+
                         <div class="space-y-4">
                             <div class="flex items-start">
-                                <svg class="h-6 w-6 text-green-500 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                <svg class="h-6 w-6 text-green-500 mr-3" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M5 13l4 4L19 7" />
                                 </svg>
                                 <div>
                                     <h3 class="font-medium text-gray-900 dark:text-white">Dedicated Instance</h3>
-                                    <p class="mt-1 text-gray-500 dark:text-gray-400">Get your own instance with a custom subdomain.</p>
+                                    <p class="mt-1 text-gray-500 dark:text-gray-400">Get your own instance with a custom
+                                        subdomain.</p>
                                 </div>
                             </div>
-                            
+
                             <div class="flex items-start">
-                                <svg class="h-6 w-6 text-green-500 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                <svg class="h-6 w-6 text-green-500 mr-3" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M5 13l4 4L19 7" />
                                 </svg>
                                 <div>
                                     <h3 class="font-medium text-gray-900 dark:text-white">Data Isolation</h3>
-                                    <p class="mt-1 text-gray-500 dark:text-gray-400">Your data stays separated from other tenants.</p>
+                                    <p class="mt-1 text-gray-500 dark:text-gray-400">Your data stays separated from
+                                        other tenants.</p>
                                 </div>
                             </div>
-                            
+
                             <div class="flex items-start">
-                                <svg class="h-6 w-6 text-green-500 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                <svg class="h-6 w-6 text-green-500 mr-3" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M5 13l4 4L19 7" />
                                 </svg>
                                 <div>
                                     <h3 class="font-medium text-gray-900 dark:text-white">Instant Setup</h3>
                                     <p class="mt-1 text-gray-500 dark:text-gray-400">Get up and running in minutes.</p>
                                 </div>
                             </div>
-                            
+
                             <div class="flex items-start">
-                                <svg class="h-6 w-6 text-green-500 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                <svg class="h-6 w-6 text-green-500 mr-3" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M5 13l4 4L19 7" />
                                 </svg>
                                 <div>
                                     <h3 class="font-medium text-gray-900 dark:text-white">Secure Access</h3>
-                                    <p class="mt-1 text-gray-500 dark:text-gray-400">Credentials sent securely to your email.</p>
+                                    <p class="mt-1 text-gray-500 dark:text-gray-400">Credentials sent securely to your
+                                        email.</p>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    
+
                     <!-- Right Column - Application Form -->
                     <div class="bg-white dark:bg-gray-800 p-8 rounded-lg shadow">
                         <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-6">Apply for Tenancy</h2>
-                        
+
                         <div class="mb-6 bg-blue-50 border-l-4 border-blue-500 text-blue-700 p-4">
-                            <p>All applications are subject to admin review. Once approved, your login credentials will be sent to your email.</p>
+                            <p>All applications are subject to admin review. Once approved, your login credentials will
+                                be sent to your email.</p>
                         </div>
-                        
+
                         @if (session('success'))
                             <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6" role="alert">
                                 <p>{{ session('success') }}</p>
                             </div>
                         @endif
-                        
+
                         <form method="POST" action="{{ route('tenants.store') }}">
                             @csrf
 
@@ -137,7 +151,7 @@
                                 <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                     Company Name
                                 </label>
-                                <input id="name" 
+                                <input id="name"
                                     class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white"
                                     type="text" name="name" value="{{ old('name') }}" required autofocus />
                                 @error('name')
@@ -150,32 +164,36 @@
                                 <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                     Email
                                 </label>
-                                <input id="email" 
+                                <input id="email"
                                     class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white"
                                     type="email" name="email" value="{{ old('email') }}" required />
                                 @error('email')
                                     <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
-                                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">We'll send your login credentials to this email.</p>
+                                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">We'll send your login
+                                    credentials to this email.</p>
                             </div>
 
                             <!-- Domain Name -->
                             <div class="mb-6">
-                                <label for="domain_name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                <label for="domain_name"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                                     Subdomain Name
                                 </label>
                                 <div class="mt-1 flex rounded-md shadow-sm">
-                                    <input id="domain_name" 
+                                    <input id="domain_name"
                                         class="block w-full px-3 py-2 rounded-l-md border border-gray-300 dark:border-gray-600 shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white"
                                         type="text" name="domain_name" value="{{ old('domain_name') }}" required />
-                                    <span class="inline-flex items-center px-3 py-2 rounded-r-md border border-l-0 border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-600 text-gray-500 dark:text-gray-300">
+                                    <span
+                                        class="inline-flex items-center px-3 py-2 rounded-r-md border border-l-0 border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-600 text-gray-500 dark:text-gray-300">
                                         .{{ config('app.domain') }}
                                     </span>
                                 </div>
                                 @error('domain_name')
                                     <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
                                 @enderror
-                                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Choose a unique subdomain for your instance.</p>
+                                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Choose a unique subdomain for
+                                    your instance.</p>
                             </div>
 
                             <!-- Apply Button -->
@@ -190,15 +208,6 @@
                 </div>
             </div>
         </div>
-        
-        <!-- Footer -->
-        <footer class="bg-white dark:bg-gray-800 mt-12">
-            <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                <p class="text-center text-gray-500 dark:text-gray-400">
-                    &copy; {{ date('Y') }} HospiBill. All rights reserved.
-                </p>
-            </div>
-        </footer>
     </div>
 </body>
 
