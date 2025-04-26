@@ -23,6 +23,20 @@
                         {{ __('User') }}
                     </x-nav-link>
                 </div>
+
+                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                    <x-nav-link :href="route('services.index')" :active="request()->routeIs('services.index')">
+                        {{ __('Services') }}
+                    </x-nav-link>
+                </div>
+                @endrole
+
+                @role('doctor')
+                    <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                        <x-nav-link :href="route('patient.index')" :active="request()->routeIs('patient.index')">
+                            {{ __('Add Patient') }}
+                        </x-nav-link>
+                    </div>
                 @endrole
             </div>
 

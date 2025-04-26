@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-use App\Models\User;
 use Illuminate\Support\Facades\Route;
 use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
-use Stancl\Tenancy\Middleware\InitializeTenancyBySubdomain;
 use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
 use Stancl\Tenancy\Middleware\ScopeSessions;
 use App\Http\Controllers\App\{
     ProfileController,
-    UserController
+    UserController,
+    ServiceController,
+    PatientController
 };
 
 /*
@@ -47,9 +47,22 @@ Route::middleware([
         Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
         
         Route::group(['middleware' => ['role:admin']], function () { 
+            Route::get('users', [UserController::class, 'index'])->name('users.index');
             Route::resource('users', UserController::class);
-         });
-        
+        });
+
+        Route::group(['middleware' => ['role:admin']], function () { 
+            Route::get('/services', [ServiceController::class, 'index'])->name('services.index');
+            Route::get('/services/create', [ServiceController::class, 'create'])->name('services.create');
+            Route::post('/services/store', [ServiceController::class, 'store'])->name('services.store');
+            Route::resource('services', ServiceController::class);
+        });
+
+        Route::group(['middleware' => ['role:doctor']], function () { 
+            Route::get('/patient', [PatientController::class, 'index'])->name('patient.index');
+            Route::get('/patient/resgiter', [PatientController::class, 'regiter'])->name('regiter.patient');
+            Route::post('/patient/store', [PatientController::class, 'store'])->name('patient.store');
+        });
     });
     
 

@@ -29,8 +29,7 @@ class UserController extends Controller
 
         $roles = SpatieRole::get();
         return view('app.users.create', compact('roles'));
-
-
+        
     }
 
     /**
@@ -56,7 +55,7 @@ class UserController extends Controller
          // Send password via email
         Mail::to($user->email)->send(new UsersCredentialsMail($plainPassword));
 
-        return redirect()->route('users.index')->with('success', 'User created successfully. Password: ' . $plainPassword);
+        return redirect()->route('users.index')->with('success', 'User created successfully.');
     }
     /**
      * Display the specified resource.
@@ -100,6 +99,7 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
-        //
+        $user->delete();
+        return redirect()->route('users.index')->with('success', 'User deleted successfully.');
     }
 }

@@ -21,15 +21,16 @@ class TenantStatusController extends Controller
             'domain_name' => 'required|string|max:255|unique:domains,domain',
         ]);
 
-        $plainPassword = Str::random(10);
-        $validatedData['password'] = bcrypt($plainPassword);
+        $validatedData['password'] =  Str::random(10);
+
         $validatedData['status'] = 'pending';
+
 
         // Create the tenant
         $tenant = Tenant::create($validatedData);
 
         // Create the domain
-        $domain = $tenant->domains()->create([
+        $tenant->domains()->create([
             'domain' => $validatedData['domain_name'] . '.' . config('app.domain'),
         ]);
         
@@ -42,19 +43,20 @@ class TenantStatusController extends Controller
     public function approve(Tenant $tenant)
     {
         if ($tenant->status !== 'approved') {
-            // Generate a new password
-            $plainPassword = Str::random(10);
+     
+            $plainPassword = $tenant->password;
             $tenant->update([
                 'status' => 'approved',
                 'password' => bcrypt($plainPassword)
-            ]);
+            ]); 
             
             // Find the domain
             $domain = $tenant->domains()->first();
             
             // Send email with credentials
             if ($domain) {
-                Mail::to($tenant->email)->send(new TenantCredentialsMail($plainPassword, $tenant, $domain->domain));
+                Mail::to($tenant->email)->send(
+                    new TenantCredentialsMail($plainPassword, $tenant, $domain->domain));
             }
             
             return redirect()->route('tenants.index')->with('success', 'Tenant application approved successfully.');

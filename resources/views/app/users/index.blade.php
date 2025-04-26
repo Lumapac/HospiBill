@@ -12,6 +12,13 @@
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
 
+                    @if(session('success'))
+                        <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 mb-4 rounded relative"
+                            role="alert">
+                            {{ session('success') }}
+                        </div>
+                    @endif
+                    
                     <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
                         <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
                             <thead
@@ -36,7 +43,7 @@
                                                 {{ $role->name }}{{ $loop->last ? '' : ', ' }}
                                             @endforeach
                                         </td>
- 
+
                                         <td class="px-6 py-4">
                                             <x-btn-link href="{{ route('users.edit', $user) }}">Edit</x-btn-link>
                                             <form action="{{ route('users.destroy', $user) }}" method="POST"
