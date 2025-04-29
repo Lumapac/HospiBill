@@ -34,7 +34,7 @@
                 @role('doctor')
                     <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                         <x-nav-link :href="route('patient.index')" :active="request()->routeIs('patient.index')">
-                            {{ __('Add Patient') }}
+                            {{ __('Patient') }}
                         </x-nav-link>
                     </div>
                 @endrole

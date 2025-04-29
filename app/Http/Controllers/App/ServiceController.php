@@ -86,7 +86,23 @@ class ServiceController extends Controller
      */
     public function destroy(Service $service)
     {
+        // Check if any patients are using this service
+        if ($service->patients()->count() > 0) {
+            return redirect()->route('services.index')
+                ->with('error', 'This service cannot be deleted because it is being used by one or more patients.');
+        }
+        
         $service->delete();
-        return redirect()->route('services.index')->with('success', 'Service deleted successfully.');
+        return redirect()->route('services.index')
+            ->with('success', 'Service deleted successfully.');
+    }
+
+    /**
+     * Return a list of services as JSON for dropdowns
+     */
+    public function list()
+    {
+        $services = Service::select('id', 'name', 'price')->get();
+        return response()->json($services);
     }
 }

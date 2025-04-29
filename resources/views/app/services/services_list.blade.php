@@ -19,6 +19,13 @@
                         </div>
                     @endif
 
+                    @if(session('error'))
+                        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 mb-4 rounded relative" role="alert">
+                            <strong class="font-bold">Error!</strong>
+                            <span class="block sm:inline">{{ session('error') }}</span>
+                        </div>
+                    @endif
+
                     <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
                         <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
                             <thead
@@ -51,7 +58,7 @@
                                             <form method="POST" action="{{ route('services.destroy', $service) }}" class="inline">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="text-red-600 hover:underline" onclick="return confirm('Are you sure?')">Delete</button>
+                                                <button type="submit" class="text-red-600 hover:underline" onclick="return confirm('Are you sure you want to delete this service? If any patients are using this service, the deletion will be prevented.')">Delete</button>
                                             </form>
                                         </td>
                                     </tr>

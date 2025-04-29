@@ -34,7 +34,26 @@
                                 </tr>
                             </thead>
                             <tbody>
-
+                                @forelse($patients as $patient)
+                                    <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                                        <td class="px-6 py-4">{{ $patient->first_name }}</td>
+                                        <td class="px-6 py-4">{{ $patient->last_name }}</td>
+                                        <td class="px-6 py-4">{{ $patient->service->name ?? 'N/A' }}</td>
+                                        <td class="px-6 py-4 space-x-2">
+                                            <a href="{{ route('patient.show', $patient) }}" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">View</a>
+                                            <a href="{{ route('patient.edit', $patient) }}" class="font-medium text-yellow-600 dark:text-yellow-500 hover:underline">Edit</a>
+                                            <form method="POST" action="{{ route('patient.destroy', $patient) }}" class="inline">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="font-medium text-red-600 dark:text-red-500 hover:underline" onclick="return confirm('Are you sure you want to delete this patient?')">Delete</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="4" class="px-6 py-4 text-center">No patients found</td>
+                                    </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>
@@ -43,7 +62,7 @@
         </div>
     </div>
 
-   @include('app.patients.patient_modal_form')
+   @include('app.patients.patient_modal_form', ['services' => $services ?? App\Models\Service::select('id', 'name', 'price')->orderBy('name')->get()])
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             // Create modal functionality
@@ -82,21 +101,24 @@
                 }
             });
             
+            // We don't need this anymore since we're loading services from the backend directly
+            /*
             // Fetch services for the dropdown
-            fetch('/api/services')
+            fetch('/services/list')
                 .then(response => response.json())
-                .then(data => {
+                .then(services => {
                     const serviceSelect = document.getElementById('service_id');
-                    data.forEach(service => {
-                        const option = document.createElement('option');
-                        option.value = service.id;
-                        option.textContent = `${service.name} - ₱${service.price}`;
-                        serviceSelect.appendChild(option);
-                    });
+                    if (serviceSelect) {
+                        services.forEach(service => {
+                            const option = document.createElement('option');
+                            option.value = service.id;
+                            option.textContent = service.name;
+                            serviceSelect.appendChild(option);
+                        });
+                    }
                 })
-                .catch(error => {
-                    console.error('Error fetching services:', error);
-                });
+                .catch(error => console.error('Error fetching services:', error));
+            */
         });
     </script>
 </x-tenant-app-layout>

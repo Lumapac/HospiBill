@@ -55,13 +55,18 @@ Route::middleware([
             Route::get('/services', [ServiceController::class, 'index'])->name('services.index');
             Route::get('/services/create', [ServiceController::class, 'create'])->name('services.create');
             Route::post('/services/store', [ServiceController::class, 'store'])->name('services.store');
+            Route::get('/services/list', [ServiceController::class, 'list'])->name('services.list');
             Route::resource('services', ServiceController::class);
         });
 
         Route::group(['middleware' => ['role:doctor']], function () { 
             Route::get('/patient', [PatientController::class, 'index'])->name('patient.index');
-            Route::get('/patient/resgiter', [PatientController::class, 'regiter'])->name('regiter.patient');
+            Route::get('/patient/register', [PatientController::class, 'register'])->name('patient.register');
             Route::post('/patient/store', [PatientController::class, 'store'])->name('patient.store');
+            Route::get('/patient/{patient}', [PatientController::class, 'show'])->name('patient.show');
+            Route::get('/patient/{patient}/edit', [PatientController::class, 'edit'])->name('patient.edit');
+            Route::put('/patient/{patient}', [PatientController::class, 'update'])->name('patient.update');
+            Route::delete('/patient/{patient}', [PatientController::class, 'destroy'])->name('patient.destroy');
         });
     });
     

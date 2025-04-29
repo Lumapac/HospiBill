@@ -97,7 +97,12 @@
                                         class="block w-full rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                                         required>
                                         <option value="">Select Service</option>
-                                        <!-- Services will be populated here -->
+
+                                        @foreach(is_iterable($services) ? $services : [] as $service)
+                                            <option value="{{ is_object($service) ? $service->id : '' }}" {{ old('service_id') == (is_object($service) ? $service->id : '') ? 'selected' : '' }}>
+                                                {{ is_object($service) ? $service->name : '' }}
+                                            </option>
+                                        @endforeach
                                     </select>
                                     <x-input-error :messages="$errors->get('service_id')" class="mt-1" />
                                 </div>

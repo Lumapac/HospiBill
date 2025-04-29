@@ -18,4 +18,12 @@ class Service extends Model
         'requirements',
         'availability',
     ];
+    
+    /**
+     * Get the patients that are using this service.
+     */
+    public function patients()
+    {
+        return $this->hasMany(Patient::class);
+    }
 }

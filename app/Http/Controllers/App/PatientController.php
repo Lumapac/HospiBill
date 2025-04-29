@@ -4,6 +4,7 @@ namespace App\Http\Controllers\App;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Service;
+use App\Models\Patient;
 
 
 class PatientController extends Controller
@@ -13,7 +14,9 @@ class PatientController extends Controller
      */
     public function index()
     {
-        return view('app.patients.patients');
+        $patients = Patient::with('service')->latest()->get();
+        $services = Service::select('id', 'name', 'price')->orderBy('name')->get();
+        return view('app.patients.patients', compact('patients', 'services'));
     }
 
     /**
@@ -21,7 +24,8 @@ class PatientController extends Controller
      */
     public function register()
     {
-        return view('app.patients.patient_modal_form');
+        $services = Service::select('id', 'name')->orderBy('name')->get();
+        return view('app.patients.patient_modal_form', compact('services'));
     }
 
     /**
@@ -29,38 +33,72 @@ class PatientController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'date_of_birth' => 'required|date',
+            'gender' => 'required|in:male,female,other',
+            'email' => 'nullable|email|max:255',
+            'phone' => 'required|string|max:20',
+            'address' => 'nullable|string',
+            'service_id' => 'required|exists:services,id',
+            'notes' => 'nullable|string',
+        ]);
+
+        Patient::create($validated);
+
+        return redirect()->route('patient.index')
+            ->with('success', 'Patient registered successfully.');
     }
-    
+
     /**
      * Display the specified resource.
      */
-    public function show(Service $service)
+    public function show(Patient $patient)
     {
-       //
+        $patient->load('service');
+        return view('app.patients.show', compact('patient'));
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Service $service)
+    public function edit(Patient $patient)
     {
-        //
+        $services = Service::select('id', 'name', 'price')->orderBy('name')->get();
+        return view('app.patients.edit', compact('patient', 'services'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Service $service)
+    public function update(Request $request, Patient $patient)
     {
-        //
+        $validated = $request->validate([
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'date_of_birth' => 'required|date',
+            'gender' => 'required|in:male,female,other',
+            'email' => 'nullable|email|max:255',
+            'phone' => 'required|string|max:20',
+            'address' => 'nullable|string',
+            'service_id' => 'required|exists:services,id',
+            'notes' => 'nullable|string',
+        ]);
+
+        $patient->update($validated);
+
+        return redirect()->route('patient.index')
+            ->with('success', 'Patient updated successfully.');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Service $service)
+    public function destroy(Patient $patient)
     {
-       //
+        $patient->delete();
+        return redirect()->route('patient.index')
+            ->with('success', 'Patient deleted successfully.');
     }
 }
