@@ -38,20 +38,29 @@ Route::middleware([
     });
 
     Route::get('/dashboard', function () {
-        return view('app.dashboard');
+        $user = Auth::user();
+
+        if ($user->hasRole('doctor')) {
+            return view('app.doctor-dashboard');
+        } elseif ($user->hasRole('casher')) {
+            return view('app.casher-dashboard');
+        } elseif ($user->hasRole('admin')) {
+            return view('app.admin-dashboard');
+        }
     })->middleware(['auth', 'verified'])->name('dashboard');
+
 
     Route::middleware('auth')->group(function () {
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
         Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
         Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-        
-        Route::group(['middleware' => ['role:admin']], function () { 
+
+        Route::group(['middleware' => ['role:admin']], function () {
             Route::get('users', [UserController::class, 'index'])->name('users.index');
             Route::resource('users', UserController::class);
         });
 
-        Route::group(['middleware' => ['role:admin']], function () { 
+        Route::group(['middleware' => ['role:admin']], function () {
             Route::get('/services', [ServiceController::class, 'index'])->name('services.index');
             Route::get('/services/create', [ServiceController::class, 'create'])->name('services.create');
             Route::post('/services/store', [ServiceController::class, 'store'])->name('services.store');
@@ -59,7 +68,7 @@ Route::middleware([
             Route::resource('services', ServiceController::class);
         });
 
-        Route::group(['middleware' => ['role:doctor']], function () { 
+        Route::group(['middleware' => ['role:doctor']], function () {
             Route::get('/patient', [PatientController::class, 'index'])->name('patient.index');
             Route::get('/patient/register', [PatientController::class, 'register'])->name('patient.register');
             Route::post('/patient/store', [PatientController::class, 'store'])->name('patient.store');
@@ -69,7 +78,7 @@ Route::middleware([
             Route::delete('/patient/{patient}', [PatientController::class, 'destroy'])->name('patient.destroy');
         });
     });
-    
+
 
     require __DIR__ . '/tenant-auth.php';
 
