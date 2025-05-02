@@ -38,6 +38,14 @@
                         </x-nav-link>
                     </div>
                 @endrole
+
+                @role('casher')
+                    <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                        <x-nav-link :href="route('patient.bill')" :active="request()->routeIs('patient.index')">
+                            {{ __('Billing') }}
+                        </x-nav-link>
+                    </div>
+                @endrole
             </div>
 
             <!-- Settings Dropdown -->

@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
 use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
 use Stancl\Tenancy\Middleware\ScopeSessions;
@@ -10,7 +11,9 @@ use App\Http\Controllers\App\{
     ProfileController,
     UserController,
     ServiceController,
-    PatientController
+    PatientController,
+    CashierController,
+    DashboardController
 };
 
 /*
@@ -41,11 +44,11 @@ Route::middleware([
         $user = Auth::user();
 
         if ($user->hasRole('doctor')) {
-            return view('app.doctor-dashboard');
+            return app(DashboardController::class)->doctorDashboard();
         } elseif ($user->hasRole('casher')) {
-            return view('app.casher-dashboard');
+            return app(DashboardController::class)->cashierDashboard();
         } elseif ($user->hasRole('admin')) {
-            return view('app.admin-dashboard');
+            return app(DashboardController::class)->adminDashboard();
         }
     })->middleware(['auth', 'verified'])->name('dashboard');
 
@@ -76,6 +79,11 @@ Route::middleware([
             Route::get('/patient/{patient}/edit', [PatientController::class, 'edit'])->name('patient.edit');
             Route::put('/patient/{patient}', [PatientController::class, 'update'])->name('patient.update');
             Route::delete('/patient/{patient}', [PatientController::class, 'destroy'])->name('patient.destroy');
+        });
+
+
+        Route::group(['middleware' => ['role:casher']], function () {
+            Route::get('/billing', [CashierController::class, 'billing'])->name('patient.bill');
         });
     });
 
