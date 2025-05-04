@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TenantController;
 use App\Http\Controllers\TenantStatusController;
+use App\Http\Controllers\SuperAdminDashboardController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -13,9 +14,9 @@ foreach (config('tenancy.central_domains') as $domain) {
     });
 }
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', [SuperAdminDashboardController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

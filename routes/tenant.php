@@ -38,7 +38,7 @@ Route::middleware([
 
     Route::get('/', function () {
         return view('app.welcome');
-    });
+    })->name('app.welcome');
 
     Route::get('/dashboard', function () {
         $user = Auth::user();
