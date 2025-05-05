@@ -29,6 +29,16 @@
                             </div>
                             
                             <div class="mb-4">
+                                <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Contact Person</p>
+                                <p class="mt-1">{{ $tenant->contact_person }}</p>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Phone Number</p>
+                                <p class="mt-1">{{ $tenant->phone_number }}</p>
+                            </div>
+                            
+                            <div class="mb-4">
                                 <p class="text-sm font-medium text-gray-500 dark:text-gray-400">Domain</p>
                                 <p class="mt-1">
                                     @foreach ($tenant->domains as $domain)

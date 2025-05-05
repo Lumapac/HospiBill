@@ -56,6 +56,26 @@
                                         type="email" name="email" value="{{ old('email', $tenant->email) }}" required />
                                 </div>
                                 
+                                <!-- Contact Person -->
+                                <div class="mb-4">
+                                    <label for="contact_person" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                        Contact Person
+                                    </label>
+                                    <input id="contact_person" 
+                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:text-white dark:border-gray-600"
+                                        type="text" name="contact_person" value="{{ old('contact_person', $tenant->contact_person) }}" required />
+                                </div>
+                                
+                                <!-- Phone Number -->
+                                <div class="mb-4">
+                                    <label for="phone_number" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                        Phone Number
+                                    </label>
+                                    <input id="phone_number" 
+                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:text-white dark:border-gray-600"
+                                        type="tel" name="phone_number" value="{{ old('phone_number', $tenant->phone_number) }}" required />
+                                </div>
+                                
                                 <!-- Status -->
                                 <div class="mb-4">
                                     <label for="status" class="block text-sm font-medium text-gray-700 dark:text-gray-300">

@@ -174,6 +174,32 @@
                                     credentials to this email.</p>
                             </div>
 
+                            <!-- Contact Person -->
+                            <div class="mb-6">
+                                <label for="contact_person" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    Contact Person
+                                </label>
+                                <input id="contact_person"
+                                    class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white"
+                                    type="text" name="contact_person" value="{{ old('contact_person') }}" required />
+                                @error('contact_person')
+                                    <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <!-- Phone Number -->
+                            <div class="mb-6">
+                                <label for="phone_number" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    Phone Number
+                                </label>
+                                <input id="phone_number"
+                                    class="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 dark:bg-gray-700 dark:text-white"
+                                    type="tel" name="phone_number" value="{{ old('phone_number') }}" required />
+                                @error('phone_number')
+                                    <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
+                            </div>
+
                             <!-- Domain Name -->
                             <div class="mb-6">
                                 <label for="domain_name"

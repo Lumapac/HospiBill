@@ -17,6 +17,8 @@ class Tenant extends BaseTenant implements TenantWithDatabase
             'id',
             'name',
             'email',
+            'contact_person',
+            'phone_number',
             'password',
             'status',
             'admin_notes',

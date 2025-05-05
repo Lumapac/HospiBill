@@ -52,6 +52,8 @@ class TenantController extends Controller
         $validatedData = $request->validate([
             'name' => 'required|string|max:255|unique:tenants,name,' . $tenant->id,
             'email' => 'required|email|max:255|unique:tenants,email,' . $tenant->id,
+            'contact_person' => 'required|string|max:255',
+            'phone_number' => 'required|string|max:20',
             'status' => 'required|in:pending,approved,rejected',
             'admin_notes' => 'nullable|string',
         ]);
