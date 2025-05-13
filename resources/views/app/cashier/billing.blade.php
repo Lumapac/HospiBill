@@ -95,16 +95,7 @@
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             <div class="flex space-x-2">
-                                                @if($bill->status !== 'paid')
-                                                    <button data-bill-id="{{ $bill->id }}"
-                                                        data-bill-number="{{ $bill->bill_number }}"
-                                                        data-patient-name="{{ $bill->patient->first_name }} {{ $bill->patient->last_name }}"
-                                                        data-amount-due="{{ $bill->amount - $bill->amount_paid }}"
-                                                        class="processPaymentBtn text-white bg-green-500 hover:bg-green-600 px-3 py-1 rounded-md text-sm"
-                                                        onclick="event.preventDefault(); document.getElementById('processPaymentModal').classList.remove('hidden'); document.getElementById('processPaymentModal').classList.add('modal-visible'); document.getElementById('paymentPatientName').textContent = this.dataset.patientName; document.getElementById('paymentBillNumber').textContent = this.dataset.billNumber; document.getElementById('paymentAmountDue').textContent = parseFloat(this.dataset.amountDue).toFixed(2); document.getElementById('payment_amount').value = this.dataset.amountDue; document.getElementById('processPaymentForm').action = '/billing/' + this.dataset.billId + '/process-payment';">
-                                                        Process Payment
-                                                    </button>
-                                                @endif
+                                               
                                                 <a href="{{ route('patient.bill.view', $bill->id) }}"
                                                     class="text-blue-600 hover:text-blue-900 text-sm">
                                                     View Details
@@ -413,10 +404,10 @@
                 }
                 
                 // Fetch the patient's service info
-                fetch(`/patient/${patientId}/services`)
-                    .then(response => response.json())
-                    .then(data => {
-                        console.log('Patient service data:', data);
+                        fetch(`/patient/${patientId}/services`)
+                            .then(response => response.json())
+                            .then(data => {
+                                console.log('Patient service data:', data);
                         if (data.service) {
                             // Set the hidden fields
                             document.getElementById('service_id').value = data.service.id;
@@ -437,14 +428,14 @@
                                 
                                 // Show current date
                                 if (dateSpan) {
-                                    const now = new Date();
+                    const now = new Date();
                                     dateSpan.textContent = now.toLocaleDateString('en-US', {
-                                        year: 'numeric',
-                                        month: 'long',
-                                        day: 'numeric'
-                                    });
-                                }
-                            }
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                    });
+                }
+            }
                         } else {
                             // Hide service info if no service found
                             document.getElementById('patientServiceInfo').classList.add('hidden');
@@ -469,9 +460,9 @@
                 // Helper function to hide modal
                 function hideModal(modal) {
                     if (modal) {
-                        modal.classList.add('hidden');
-                        modal.classList.remove('modal-visible');
-                    }
+                    modal.classList.add('hidden');
+                    modal.classList.remove('modal-visible');
+                }
                 }
                 
                 // Cancel button for create bill modal
@@ -489,7 +480,7 @@
                         hideModal(processPaymentModal);
                     });
                 }
-                
+
                 // Set default due date to 7 days from now
                 const defaultDueDate = new Date();
                 defaultDueDate.setDate(defaultDueDate.getDate() + 7);
@@ -503,7 +494,7 @@
                     createBillForm.addEventListener('submit', function(e) {
                         // Basic validation
                         if (!document.getElementById('patient_id').value || !dueDateInput.value) {
-                            e.preventDefault();
+                    e.preventDefault();
                             alert('Please select a patient and due date');
                             return false;
                         }

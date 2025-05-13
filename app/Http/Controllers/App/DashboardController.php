@@ -92,6 +92,12 @@ class DashboardController extends Controller
             ->orderBy('due_date', 'asc')
             ->paginate(10);
             
+        // Get fully paid bills with pagination
+        $paidBills = Bill::with(['patient', 'service', 'payments'])
+            ->where('status', 'paid')
+            ->orderBy('updated_at', 'desc')
+            ->paginate(10, ['*'], 'paid_page');
+            
         // Get a list of services for the create bill form
         $services = Service::orderBy('name')->get();
             
@@ -101,6 +107,7 @@ class DashboardController extends Controller
             'completedTransactions',
             'recentPatients',
             'pendingBills',
+            'paidBills',
             'services'
         ));
     }

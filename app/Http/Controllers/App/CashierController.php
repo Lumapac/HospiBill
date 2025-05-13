@@ -7,13 +7,14 @@ use App\Models\Bill;
 use App\Models\Patient;
 use App\Models\Payment;
 use App\Models\Service;
+use App\Mail\BillCreatedMail;
+use App\Mail\PaymentConfirmationMail;
+use App\Services\PdfService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Str;
-use App\Mail\BillCreatedMail;
-use App\Services\PdfService;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 
 class CashierController extends Controller
 {
@@ -123,7 +124,24 @@ class CashierController extends Controller
         
         $bill->save();
         
-        return redirect()->route('patient.bill')->with('success', 'Payment processed successfully.');
+        // Load the relationships needed for the email
+        $bill->load(['patient', 'service', 'payments.cashier']);
+        
+        // Send payment confirmation email if patient has an email
+        $successMessage = 'Payment processed successfully.';
+        
+        if ($bill->patient->email) {
+            try {
+                Mail::to($bill->patient->email)->send(new PaymentConfirmationMail($bill, $payment));
+                $successMessage = 'Payment processed successfully and confirmation sent to patient email.';
+            } catch (\Exception $e) {
+                // Log the error but don't fail the request
+                Log::error('Failed to send payment confirmation email: ' . $e->getMessage());
+                $successMessage = 'Payment processed successfully, but there was an issue sending the confirmation email.';
+            }
+        }
+        
+        return redirect()->route('patient.bill.view', $bill->id)->with('success', $successMessage);
     }
     
     public function viewBill(Bill $bill)

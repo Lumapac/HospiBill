@@ -15,11 +15,8 @@
                     Download PDF
                 </a>
                 @if($bill->status !== 'paid')
-                <button id="processPaymentBtn" 
-                    data-bill-id="{{ $bill->id }}"
-                    data-bill-number="{{ $bill->bill_number }}"
-                    data-patient-name="{{ $bill->patient->first_name }} {{ $bill->patient->last_name }}"
-                    data-amount-due="{{ $bill->amount - $bill->amount_paid }}"
+                <button type="button"
+                    onclick="document.getElementById('processPaymentModal').style.display = 'block';"
                     class="inline-flex items-center px-4 py-2 bg-green-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-green-700 active:bg-green-700 focus:outline-none focus:border-green-700 focus:ring focus:ring-green-300 disabled:opacity-25 transition">
                     Process Payment
                 </button>
@@ -30,6 +27,19 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+            <!-- Status Messages -->
+            @if (session('success'))
+            <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6" role="alert">
+                <p>{{ session('success') }}</p>
+            </div>
+            @endif
+
+            @if (session('error'))
+            <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6" role="alert">
+                <p>{{ session('error') }}</p>
+            </div>
+            @endif
+
             <!-- Bill Information Card -->
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6">
@@ -136,7 +146,7 @@
     </div>
 
     <!-- Process Payment Modal -->
-    <div id="processPaymentModal" class="fixed inset-0 z-50 overflow-y-auto hidden">
+    <div id="processPaymentModal" class="fixed inset-0 z-50 overflow-y-auto" style="display: none;">
         <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
             <div class="fixed inset-0 transition-opacity">
                 <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
@@ -154,7 +164,7 @@
                                 Bill #: <span id="paymentBillNumber" class="font-bold"></span>
                             </p>
                             <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                                Amount Due: ₱<span id="paymentAmountDue" class="font-bold"></span>
+                                Amount Due: PHP <span id="paymentAmountDue" class="font-bold"></span>
                             </p>
                         </div>
                         <form id="processPaymentForm" action="" method="POST">
@@ -187,7 +197,7 @@
                     <button type="submit" form="processPaymentForm" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:ml-3 sm:w-auto sm:text-sm">
                         Complete Payment
                     </button>
-                    <button type="button" id="cancelProcessPayment" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                    <button type="button" onclick="closePaymentModal()" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
                         Cancel
                     </button>
                 </div>
@@ -195,45 +205,37 @@
         </div>
     </div>
 
-    @push('scripts')
     <script>
+        // Pre-fill the form with bill data
+        const billId = "{{ $bill->id }}";
+        const billNumber = "{{ $bill->bill_number }}";
+        const patientName = "{{ $bill->patient->first_name }} {{ $bill->patient->last_name }}";
+        const amountDue = "{{ $bill->amount - $bill->amount_paid }}";
+        
+        // Function to close the payment modal
+        function closePaymentModal() {
+            document.getElementById('processPaymentModal').style.display = 'none';
+        }
+        
+        // Set the values when the page loads
         document.addEventListener('DOMContentLoaded', function() {
-            // Process Payment Button
-            const processPaymentBtn = document.getElementById('processPaymentBtn');
-            if (processPaymentBtn) {
-                const processPaymentModal = document.getElementById('processPaymentModal');
-                const cancelProcessPayment = document.getElementById('cancelProcessPayment');
-                const paymentPatientName = document.getElementById('paymentPatientName');
-                const paymentBillNumber = document.getElementById('paymentBillNumber');
-                const paymentAmountDue = document.getElementById('paymentAmountDue');
-                const paymentForm = document.getElementById('processPaymentForm');
-                const paymentAmountInput = document.getElementById('payment_amount');
-                
-                processPaymentBtn.addEventListener('click', function() {
-                    const billId = this.dataset.billId;
-                    const billNumber = this.dataset.billNumber;
-                    const patientName = this.dataset.patientName;
-                    const amountDue = this.dataset.amountDue;
-                    
-                    // Set the values in the modal
-                    paymentPatientName.textContent = patientName;
-                    paymentBillNumber.textContent = billNumber;
-                    paymentAmountDue.textContent = parseFloat(amountDue).toFixed(2);
-                    paymentAmountInput.value = amountDue;
-                    paymentAmountInput.max = amountDue;
-                    
-                    // Set the form action
-                    paymentForm.action = `/billing/${billId}/process-payment`;
-                    
-                    // Show the modal
-                    processPaymentModal.classList.remove('hidden');
-                });
-                
-                cancelProcessPayment.addEventListener('click', function() {
-                    processPaymentModal.classList.add('hidden');
-                });
+            document.getElementById('paymentPatientName').textContent = patientName;
+            document.getElementById('paymentBillNumber').textContent = billNumber;
+            document.getElementById('paymentAmountDue').textContent = parseFloat(amountDue).toFixed(2);
+            
+            document.getElementById('payment_amount').value = amountDue;
+            document.getElementById('payment_amount').max = amountDue;
+            document.getElementById('reference_number').value = billNumber;
+            
+            document.getElementById('processPaymentForm').action = `/billing/${billId}/process-payment`;
+        });
+        
+        // Close modal when clicking outside
+        window.addEventListener('click', function(e) {
+            const modal = document.getElementById('processPaymentModal');
+            if (e.target === modal) {
+                modal.style.display = 'none';
             }
         });
     </script>
-    @endpush
 </x-tenant-app-layout> 

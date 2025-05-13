@@ -100,6 +100,79 @@
                     @endif
                 </div>
             </div>
+
+            <!-- Fully Paid Bills -->
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-semibold">Fully Paid Bills</h3>
+                        <div class="flex space-x-2">
+                            <input type="text" id="searchPaidPatient" placeholder="Search paid patient..." 
+                                class="rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50 dark:bg-gray-700">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Bill ID</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Patient Name</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Service</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Total Amount</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Paid Date</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Payment Method</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="paidBillsTable" class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                                @foreach ($paidBills ?? [] as $bill)
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap">{{ $bill->bill_number }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">{{ $bill->patient->first_name }} {{ $bill->patient->last_name }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">{{ $bill->service->name }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap font-semibold text-green-600">₱{{ number_format($bill->amount, 2) }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">{{ \Carbon\Carbon::parse($bill->updated_at)->format('M d, Y') }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        @if($bill->payments->isNotEmpty())
+                                            @php 
+                                                $lastPayment = $bill->payments->sortByDesc('created_at')->first();
+                                                $paymentMethod = ucfirst($lastPayment->payment_method);
+                                            @endphp
+                                            {{ $paymentMethod }}
+                                        @else
+                                            N/A
+                                        @endif
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex space-x-2">
+                                            <a href="{{ route('patient.bill.view', $bill->id) }}" class="text-blue-600 hover:text-blue-900 text-sm">
+                                                View Details
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                @endforeach
+                                @if(count($paidBills ?? []) === 0)
+                                    <tr>
+                                        <td colspan="7" class="px-6 py-4 text-center text-gray-500">No fully paid bills found</td>
+                                    </tr>
+                                @endif
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- Pagination -->
+                    @if(isset($paidBills) && $paidBills->hasPages())
+                    <div class="mt-4 flex items-center justify-between">
+                        <div class="text-sm text-gray-500">
+                            Showing {{ $paidBills->firstItem() }} to {{ $paidBills->lastItem() }} of {{ $paidBills->total() }} entries
+                        </div>
+                        <div class="flex space-x-2">
+                            {{ $paidBills->links() }}
+                        </div>
+                    </div>
+                    @endif
+                </div>
+            </div>
         </div>
     </div>
 
@@ -348,16 +421,43 @@
             const searchPatientInput = document.getElementById('searchPatient');
             const unpaidBillsTable = document.getElementById('unpaidBillsTable');
             
-            searchPatientInput.addEventListener('input', function() {
-                if (this.value.length < 2) return; // Only search if at least 2 characters
-                
-                fetch(`/billing/search-patients?search=${this.value}`)
-                    .then(response => response.json())
-                    .then(patients => {
-                        // Implementation to filter the bills table based on patient search
-                        // This would typically update the DOM elements in the bills table
+            if (searchPatientInput) {
+                searchPatientInput.addEventListener('keyup', function() {
+                    const searchValue = this.value.toLowerCase();
+                    const rows = unpaidBillsTable.querySelectorAll('tr');
+                    
+                    rows.forEach(row => {
+                        const patientName = row.cells[1]?.textContent.toLowerCase() || '';
+                        
+                        if (patientName.includes(searchValue)) {
+                            row.style.display = '';
+                        } else {
+                            row.style.display = 'none';
+                        }
                     });
-            });
+                });
+            }
+            
+            // Search paid patients logic
+            const searchPaidPatientInput = document.getElementById('searchPaidPatient');
+            const paidBillsTable = document.getElementById('paidBillsTable');
+            
+            if (searchPaidPatientInput) {
+                searchPaidPatientInput.addEventListener('keyup', function() {
+                    const searchValue = this.value.toLowerCase();
+                    const rows = paidBillsTable.querySelectorAll('tr');
+                    
+                    rows.forEach(row => {
+                        const patientName = row.cells[1]?.textContent.toLowerCase() || '';
+                        
+                        if (patientName.includes(searchValue)) {
+                            row.style.display = '';
+                        } else {
+                            row.style.display = 'none';
+                        }
+                    });
+                });
+            }
         });
     </script>
     @endpush
