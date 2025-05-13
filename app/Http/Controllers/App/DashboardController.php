@@ -3,12 +3,11 @@
 namespace App\Http\Controllers\App;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use App\Models\Bill;
 use App\Models\Patient;
+use App\Models\Payment;
 use App\Models\Service;
 use App\Models\User;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
 class DashboardController extends Controller
@@ -69,20 +68,40 @@ class DashboardController extends Controller
      */
     public function cashierDashboard()
     {
-        $todayCollections = 0; // Replace with actual collection calculation when payment model is available
-        $pendingPayments = 0; // Replace with actual pending payments count when payment model is available
-        $completedTransactions = 0; // Replace with actual completed transactions count when payment model is available
+        // Get today's collections (sum of all payments made today)
+        $todayCollections = Payment::whereDate('created_at', Carbon::today())
+            ->sum('amount');
         
+        // Get count of pending payments (bills that are not fully paid)
+        $pendingPayments = Bill::where('status', '!=', 'paid')
+            ->count();
+        
+        // Get count of completed transactions (bills that are fully paid)
+        $completedTransactions = Bill::where('status', 'paid')
+            ->count();
+        
+        // Get recent patients
         $recentPatients = Patient::with('service')
             ->orderBy('created_at', 'desc')
             ->take(5)
             ->get();
             
-        return view('app.casher-dashboard', compact(
+        // Get pending bills with pagination
+        $pendingBills = Bill::with(['patient', 'service'])
+            ->where('status', '!=', 'paid')
+            ->orderBy('due_date', 'asc')
+            ->paginate(10);
+            
+        // Get a list of services for the create bill form
+        $services = Service::orderBy('name')->get();
+            
+        return view('app.cashier-dashboard', compact(
             'todayCollections',
             'pendingPayments',
             'completedTransactions',
-            'recentPatients'
+            'recentPatients',
+            'pendingBills',
+            'services'
         ));
     }
 } 

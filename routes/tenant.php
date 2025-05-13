@@ -45,7 +45,7 @@ Route::middleware([
 
         if ($user->hasRole('doctor')) {
             return app(DashboardController::class)->doctorDashboard();
-        } elseif ($user->hasRole('casher')) {
+        } elseif ($user->hasRole('cashier')) {
             return app(DashboardController::class)->cashierDashboard();
         } elseif ($user->hasRole('admin')) {
             return app(DashboardController::class)->adminDashboard();
@@ -82,8 +82,15 @@ Route::middleware([
         });
 
 
-        Route::group(['middleware' => ['role:casher']], function () {
+        Route::group(['middleware' => ['role:cashier']], function () {
             Route::get('/billing', [CashierController::class, 'billing'])->name('patient.bill');
+            Route::post('/billing/create', [CashierController::class, 'createBill'])->name('patient.bill.create');
+            Route::get('/billing/{bill}', [CashierController::class, 'viewBill'])->name('patient.bill.view');
+            Route::get('/billing/{bill}/pdf', [CashierController::class, 'downloadBillPdf'])->name('patient.bill.pdf');
+            Route::post('/billing/{bill}/process-payment', [CashierController::class, 'processPayment'])->name('patient.bill.payment');
+            Route::get('/billing/search-patients', [CashierController::class, 'searchPatients'])->name('patient.bill.search');
+            Route::get('/patient/{patient}/services', [CashierController::class, 'getPatientServices'])->name('patient.services');
+            Route::get('/billing/all', [CashierController::class, 'listAllBills'])->name('patient.bill.all');
         });
     });
 

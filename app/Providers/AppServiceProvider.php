@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Schema;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -11,7 +12,14 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // Register DomPDF
+        $this->app->bind('dompdf', function() {
+            return new \Dompdf\Dompdf();
+        });
+        
+        $this->app->bind('dompdf.pdf', function() {
+            return new \Barryvdh\DomPDF\PDF($this->app->make('dompdf'));
+        });
     }
 
     /**
@@ -19,6 +27,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        // Set default string length for database migrations
+        Schema::defaultStringLength(191);
     }
 }

@@ -33,4 +33,36 @@ class Patient extends Model
     {
         return $this->belongsTo(Service::class);
     }
+    
+    /**
+     * Get all bills associated with this patient.
+     */
+    public function bills()
+    {
+        return $this->hasMany(Bill::class);
+    }
+    
+    /**
+     * Get the patient's full name.
+     */
+    public function getFullNameAttribute()
+    {
+        return "{$this->first_name} {$this->last_name}";
+    }
+    
+    /**
+     * Check if the patient has any recent services.
+     */
+    public function hasRecentService()
+    {
+        return $this->service()->exists();
+    }
+    
+    /**
+     * Get the most recent bill for this patient.
+     */
+    public function getRecentBillAttribute()
+    {
+        return $this->bills()->orderBy('created_at', 'desc')->first();
+    }
 } 
