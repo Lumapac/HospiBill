@@ -1,81 +1,163 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Tenants') }}
-        </h2>
-    </x-slot>
+@extends('layouts.sidebar')
+@section('title', 'Manage Tenants')
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900 dark:text-gray-100">
-                    <!-- Session Status -->
-                    @if (session('success'))
-                        <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6" role="alert">
-                            <p>{{ session('success') }}</p>
+@section('content')
+    <main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg">
+        @include('layouts.navbar', ['title' => 'Tenants'])
+
+        <div class="container-fluid py-2">
+            <div class="row">
+                <div class="ms-3">
+                    <h3 class="mb-0 h4 font-weight-bolder">Tenant Management</h3>
+                    <p class="mb-4">
+                        Manage hospital tenants, review applications, and update their information.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Status Messages -->
+            @if (session('success'))
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <span class="alert-icon align-middle">
+                        <span class="material-symbols-rounded opacity-10">thumb_up</span>
+                    </span>
+                    <span class="alert-text">{{ session('success') }}</span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                         </div>
                     @endif
                     
                     @if (session('info'))
-                        <div class="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 mb-6" role="alert">
-                            <p>{{ session('info') }}</p>
+                <div class="alert alert-info alert-dismissible fade show" role="alert">
+                    <span class="alert-icon align-middle">
+                        <span class="material-symbols-rounded opacity-10">info</span>
+                    </span>
+                    <span class="alert-text">{{ session('info') }}</span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                         </div>
                     @endif
                     
-                    <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
-                        <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-                            <thead
-                                class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                                <tr>
-                                    <th scope="col" class="px-6 py-3">Name</th>
-                                    <th scope="col" class="px-6 py-3">Email</th>
-                                    <th scope="col" class="px-6 py-3">Domain Name</th>
-                                    <th scope="col" class="px-6 py-3">Status</th>
-                                    <th scope="col" class="px-6 py-3">Actions</th>
+            <!-- Tenants Table -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header p-3">
+                            <div class="row">
+                                <div class="col-6 d-flex align-items-center">
+                                    <h6 class="mb-0">All Tenants</h6>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body px-0 pt-0 pb-2">
+                            <div class="table-responsive p-0">
+                                <table class="table align-items-center mb-0" id="tenants-table">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                                Tenant</th>
+                                            <th
+                                                class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
+                                                Domain</th>
+                                            <th
+                                                class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                                Status</th>
+                                            <th
+                                                class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                                Contact</th>
+                                            <th class="text-secondary opacity-7"></th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($tenants as $tenant)
-                                    <tr
-                                        class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                                        <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                            {{ $tenant->name }}
+                                        @foreach($tenants as $tenant)
+                                            <tr>
+                                                <td>
+                                                    <div class="d-flex px-3 py-1">
+                                                        <div class="d-flex flex-column justify-content-center">
+                                                            <h6 class="mb-0 text-sm">{{ $tenant->name }}</h6>
+                                                            <p class="text-xs text-secondary mb-0">{{ $tenant->email }}</p>
+                                                        </div>
+                                                    </div>
                                         </td>
-                                        <td class="px-6 py-4">{{ $tenant->email }}</td>
-                                        <td class="px-6 py-4">
+                                                <td>
+                                                    <p class="text-xs font-weight-bold mb-0">
                                             @foreach ($tenant->domains as $domain)
                                                 {{ $domain->domain }}{{ $loop->last ? '' : ', ' }}
                                             @endforeach
+                                                    </p>
                                         </td>
-                                        <td class="px-6 py-4">
+                                                <td class="align-middle text-center text-sm">
                                             {!! $tenant->status_badge !!}
                                         </td>
-                                        <td class="px-6 py-4 flex space-x-2">
-                                            <a href="{{ route('tenants.show', $tenant) }}" class="px-3 py-1 text-xs text-blue-600 hover:text-blue-900">View</a>
-                                            <a href="{{ route('tenants.edit', $tenant) }}" class="px-3 py-1 text-xs text-gray-600 hover:text-gray-900">Edit</a>
+                                                <td class="align-middle text-center">
+                                                    <span
+                                                        class="text-secondary text-xs font-weight-bold">{{ $tenant->contact_person ?? 'N/A' }}</span>
+                                                    <p class="text-xs text-secondary mb-0">{{ $tenant->phone_number ?? 'N/A' }}
+                                                    </p>
+                                                </td>
+                                                <td class="align-middle">
+                                                    <div class="ms-auto">
+                                                        <button type="button"
+                                                            class="btn btn-link text-info px-1 mb-0 view-tenant-btn"
+                                                            data-tenant-id="{{ $tenant->id }}"
+                                                            data-tenant-name="{{ $tenant->name }}"
+                                                            data-tenant-email="{{ $tenant->email }}"
+                                                            data-tenant-status="{{ $tenant->status }}"
+                                                            data-tenant-contact="{{ $tenant->contact_person }}"
+                                                            data-tenant-phone="{{ $tenant->phone_number }}"
+                                                            data-tenant-domains="@foreach($tenant->domains as $domain){{ $domain->domain }}{{ $loop->last ? '' : ', ' }}@endforeach"
+                                                            data-tenant-created="{{ $tenant->created_at->format('F d, Y H:i') }}"
+                                                            data-tenant-notes="{{ $tenant->admin_notes }}">
+                                                            <i class="material-symbols-rounded text-sm me-2">visibility</i>
+                                                            View
+                                                        </button>
+                                                        <button type="button"
+                                                            class="btn btn-link text-dark px-1 mb-0 edit-tenant-btn"
+                                                            data-tenant-id="{{ $tenant->id }}"
+                                                            data-tenant-name="{{ $tenant->name }}"
+                                                            data-tenant-email="{{ $tenant->email }}"
+                                                            data-tenant-status="{{ $tenant->status }}"
+                                                            data-tenant-contact="{{ $tenant->contact_person }}"
+                                                            data-tenant-phone="{{ $tenant->phone_number }}"
+                                                            data-tenant-notes="{{ $tenant->admin_notes }}">
+                                                            <i class="material-symbols-rounded text-sm me-2">edit</i>
+                                                            Edit
+                                                        </button>
                                             
                                             @if($tenant->status === 'pending')
-                                                <form action="{{ route('tenants.approve', $tenant) }}" method="POST" class="inline">
+                                                            <form action="{{ route('tenants.approve', $tenant) }}" method="POST"
+                                                                class="d-inline">
                                                     @csrf
                                                     @method('PATCH')
-                                                    <button type="submit" class="px-3 py-1 text-xs text-green-600 hover:text-green-900">Approve</button>
+                                                                <button type="submit" class="btn btn-link text-success px-1 mb-0">
+                                                                    <i
+                                                                        class="material-symbols-rounded text-sm me-2">check_circle</i>
+                                                                    Approve
+                                                                </button>
                                                 </form>
                                                 
-                                                <button 
-                                                    type="button" 
-                                                    class="px-3 py-1 text-xs text-red-600 hover:text-red-900 reject-btn"
+                                                            <button type="button"
+                                                                class="btn btn-link text-danger px-1 mb-0 reject-btn"
                                                     data-tenant-id="{{ $tenant->id }}"
-                                                    data-tenant-name="{{ $tenant->name }}"
-                                                >
+                                                                data-tenant-name="{{ $tenant->name }}">
+                                                                <i class="material-symbols-rounded text-sm me-2">cancel</i>
                                                     Reject
                                                 </button>
                                             @endif
                                             
-                                            <form action="{{ route('tenants.destroy', $tenant) }}" method="POST" class="inline">
+                                                        <form action="{{ route('tenants.destroy', $tenant) }}" method="POST"
+                                                            class="d-inline delete-form">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="px-3 py-1 text-xs text-red-600 hover:text-red-900" onclick="return confirm('Are you sure you want to delete this tenant?')">Delete</button>
+                                                            <button type="button"
+                                                                class="btn btn-link text-danger px-1 mb-0 delete-btn">
+                                                                <i class="material-symbols-rounded text-sm me-2">delete</i>
+                                                                Delete
+                                                            </button>
                                             </form>
+                                                    </div>
                                         </td>
                                     </tr>
                                 @endforeach
@@ -86,70 +168,136 @@
             </div>
         </div>
     </div>
+        </div>
+    </main>
+
+    <!-- Include modals -->
+    @include('components.tenant-view-modal')
+    @include('components.tenant-edit-modal')
     
     <!-- Reject Modal -->
-    <div id="rejectModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 hidden flex items-center justify-center z-50">
-        <div class="bg-white rounded-lg p-6 max-w-md w-full">
-            <h3 class="text-xl font-bold mb-4">Reject Tenant Application</h3>
-            <p class="mb-4">Please provide a reason for rejecting <span id="tenantName" class="font-semibold"></span>'s application:</p>
+    <div class="modal fade" id="rejectModal" tabindex="-1" role="dialog" aria-labelledby="rejectModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="rejectModalLabel">Reject Tenant Application</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Please provide a reason for rejecting <span id="tenantName" class="font-weight-bold"></span>'s
+                        application:</p>
             
             <form id="rejectForm" method="POST">
                 @csrf
                 @method('PATCH')
                 
-                <div class="mb-4">
-                    <label for="admin_notes" class="block text-sm font-medium text-gray-700">Notes/Reason</label>
-                    <textarea 
-                        id="admin_notes" 
-                        name="admin_notes" 
-                        rows="4" 
-                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
-                        required
-                    ></textarea>
+                        <div class="input-group input-group-static mb-4">
+                            <label for="admin_notes">Notes/Reason</label>
+                            <textarea id="admin_notes" name="admin_notes" class="form-control" rows="4" required></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn bg-gradient-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn bg-gradient-danger" id="confirmReject">Reject Application</button>
+                </div>
+            </div>
+        </div>
                 </div>
                 
-                <div class="flex justify-end space-x-3">
-                    <button 
-                        type="button" 
-                        id="cancelReject"
-                        class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300"
-                    >
-                        Cancel
-                    </button>
-                    <button 
-                        type="submit" 
-                        class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
-                    >
-                        Reject Application
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel">Confirm Deletion</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-            </form>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete this tenant? This action cannot be undone.</p>
+                    <p>All data associated with this tenant will be permanently removed from the system.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn bg-gradient-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn bg-gradient-danger" id="confirmDelete">Delete Tenant</button>
+                </div>
+            </div>
         </div>
     </div>
+
+    <!-- Include JavaScript for tenant modals -->
+    <script src="{{ asset('js/tenant-modals.js') }}"></script>
     
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
+            // Reject functionality
+            const rejectModal = new bootstrap.Modal(document.getElementById('rejectModal'));
             const rejectButtons = document.querySelectorAll('.reject-btn');
-            const rejectModal = document.getElementById('rejectModal');
-            const cancelButton = document.getElementById('cancelReject');
+            const confirmRejectBtn = document.getElementById('confirmReject');
             const tenantNameSpan = document.getElementById('tenantName');
             const rejectForm = document.getElementById('rejectForm');
             
             rejectButtons.forEach(button => {
-                button.addEventListener('click', function() {
+                button.addEventListener('click', function () {
                     const tenantId = this.getAttribute('data-tenant-id');
                     const tenantName = this.getAttribute('data-tenant-name');
                     
                     tenantNameSpan.textContent = tenantName;
                     rejectForm.action = `/tenants/${tenantId}/reject`;
-                    rejectModal.classList.remove('hidden');
+                    rejectModal.show();
+                });
+            });
+
+            confirmRejectBtn.addEventListener('click', function () {
+                rejectForm.submit();
+            });
+
+            // Delete functionality
+            const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+            const deleteButtons = document.querySelectorAll('.delete-btn');
+            const confirmDeleteBtn = document.getElementById('confirmDelete');
+            let currentDeleteForm = null;
+
+            deleteButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    currentDeleteForm = this.closest('.delete-form');
+                    deleteModal.show();
                 });
             });
             
-            cancelButton.addEventListener('click', function() {
-                rejectModal.classList.add('hidden');
-                rejectForm.reset();
+            confirmDeleteBtn.addEventListener('click', function () {
+                if (currentDeleteForm) {
+                    currentDeleteForm.submit();
+                }
+                deleteModal.hide();
+            });
+
+            // Search functionality
+            const searchInput = document.getElementById('tenant-search');
+            const table = document.getElementById('tenants-table');
+            const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+
+            searchInput.addEventListener('keyup', function () {
+                const searchTerm = searchInput.value.toLowerCase();
+
+                for (let i = 0; i < rows.length; i++) {
+                    const tenantName = rows[i].getElementsByTagName('td')[0].textContent.toLowerCase();
+                    const tenantEmail = rows[i].getElementsByTagName('td')[0].textContent.toLowerCase();
+                    const tenantDomain = rows[i].getElementsByTagName('td')[1].textContent.toLowerCase();
+
+                    if (tenantName.includes(searchTerm) || tenantEmail.includes(searchTerm) || tenantDomain.includes(searchTerm)) {
+                        rows[i].style.display = '';
+                    } else {
+                        rows[i].style.display = 'none';
+                    }
+                }
             });
         });
     </script>
-</x-app-layout>
+@endsection

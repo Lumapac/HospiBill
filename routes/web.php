@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TenantController;
 use App\Http\Controllers\TenantStatusController;
 use App\Http\Controllers\SuperAdminDashboardController;
+use App\Http\Controllers\ReportController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -33,5 +34,9 @@ Route::middleware(['auth'])->group(function () {
     Route::patch('/tenants/{tenant}/approve', [TenantStatusController::class, 'approve'])->name('tenants.approve');
     Route::patch('/tenants/{tenant}/reject', [TenantStatusController::class, 'reject'])->name('tenants.reject');
 });
+
+// Report routes
+Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+Route::post('/reports/generate', [ReportController::class, 'generate'])->name('reports.generate');
 
 require __DIR__ . '/auth.php';

@@ -75,6 +75,14 @@ class TenantController extends Controller
             }
         }
 
+        // Check if request is AJAX
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true, 
+                'message' => 'Tenant updated successfully'
+            ]);
+        }
+
         return redirect()->route('tenants.index')->with('success', 'Tenant updated successfully.');
     }
 
