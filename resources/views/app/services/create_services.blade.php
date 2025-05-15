@@ -1,129 +1,129 @@
 <!-- Create Modal -->
-<div id="serviceModal" class="fixed inset-0 z-50 overflow-y-auto hidden" aria-labelledby="modal-title" role="dialog"
-    aria-modal="true">
-    <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+<div class="modal fade" id="serviceModal" tabindex="-1" role="dialog" aria-labelledby="serviceModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-gradient-success">
+                <h5 class="modal-title text-white" id="serviceModalLabel">Create New Service</h5>
+                <button type="button" class="btn-close text-white" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-info text-white">
+                    <i class="material-symbols-rounded opacity-5 text-white me-2">info</i>
+                    Create a new medical service that can be assigned to patients.
+                </div>
+                
+                <form id="serviceForm" method="POST" action="{{ route('services.store') }}">
+                    @csrf
 
-        <!-- Background overlay -->
-        <div id="modalBackdrop" class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
-
-        <!-- Modal panel -->
-        <div
-            class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-3xl sm:w-full">
-            <div class="bg-white dark:bg-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                <div class="sm:flex sm:items-start">
-                    <div class="mt-3 text-center sm:mt-0 sm:text-left w-full">
-                        <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100" id="modal-title">
-                            Create New Service
-                        </h3>
-                        <div class="mt-4">
-                            <form id="serviceForm" method="POST" action="{{ route('services.store') }}">
-                                @csrf
-
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                                    <div class="space-y-2">
-                                        <x-input-label for="name" :value="__('Service')" class="text-lg font-medium" />
-                                        <x-text-input id="name" class="block w-full shadow-sm" type="text" name="name"
-                                            :value="old('name')" placeholder="Enter service name" required autofocus />
-                                        <x-input-error :messages="$errors->get('name')" class="mt-1" />
-                                    </div>
-
-                                    <div class="space-y-2">
-                                        <x-input-label for="price" :value="__('Price')" class="text-lg font-medium" />
-                                        <div class="relative rounded-md shadow-sm">
-                                            <div
-                                                class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                                <span class="text-gray-500 sm:text-sm">₱</span>
-                                            </div>
-                                            <x-text-input id="price" class="block w-full pl-7" type="number" min="0"
-                                                step="0.01" name="price" :value="old('price')" placeholder="0.00"
-                                                required />
-                                        </div>
-                                        <x-input-error :messages="$errors->get('price')" class="mt-1" />
-                                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="input-group input-group-dynamic mb-4">
+                                <span class="input-group-text"><i class="material-symbols-rounded opacity-6">medical_services</i></span>
+                                <div class="form-floating ps-0">
+                                    <input type="text" class="form-control" id="name" name="name" :value="old('name')" placeholder="Service Name" required autofocus />
+                                    <label for="name">Service Name</label>
                                 </div>
+                            </div>
+                            @error('name')
+                                <div class="text-danger text-xs">{{ $message }}</div>
+                            @enderror
+                        </div>
 
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                                    <div class="space-y-2">
-                                        <x-input-label for="category" :value="__('Category')"
-                                            class="text-lg font-medium" />
-                                        <select id="category" name="category"
-                                            class="block w-full rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                                            required>
-                                            <option value="">Select Category</option>
-                                            <option value="Consultation" {{ old('category') == 'Consultation' ? 'selected' : '' }}>Consultation</option>
-                                            <option value="Laboratory" {{ old('category') == 'Laboratory' ? 'selected' : '' }}>Laboratory</option>
-                                            <option value="Surgery" {{ old('category') == 'Surgery' ? 'selected' : '' }}>
-                                                Surgery</option>
-                                            <option value="Therapy" {{ old('category') == 'Therapy' ? 'selected' : '' }}>
-                                                Therapy</option>
-                                            <option value="Diagnostic" {{ old('category') == 'Diagnostic' ? 'selected' : '' }}>Diagnostic</option>
-                                            <option value="Wellness" {{ old('category') == 'Wellness' ? 'selected' : '' }}>Wellness</option>
-                                            <option value="Other" {{ old('category') == 'Other' ? 'selected' : '' }}>Other
-                                            </option>
-                                        </select>
-                                        <x-input-error :messages="$errors->get('category')" class="mt-1" />
-                                    </div>
-
-                                    <div class="space-y-2">
-                                        <x-input-label for="duration" :value="__('Duration')"
-                                            class="text-lg font-medium" />
-                                        <div class="relative rounded-md shadow-sm">
-                                            <x-text-input id="duration" class="block w-full" type="text" name="duration"
-                                                :value="old('duration')" placeholder="e.g. 30 minutes, 1 hour" />
-                                            <div
-                                                class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                                                <span class="text-gray-500 sm:text-sm">⏱️</span>
-                                            </div>
-                                        </div>
-                                        <x-input-error :messages="$errors->get('duration')" class="mt-1" />
-                                    </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="input-group input-group-dynamic mb-4">
+                                <span class="input-group-text">₱</span>
+                                <div class="form-floating ps-0">
+                                    <input type="number" class="form-control" id="price" min="0" step="0.01" name="price" :value="old('price')" placeholder="0.00" required />
+                                    <label for="price">Price</label>
                                 </div>
-
-                                <div class="mb-6">
-                                    <x-input-label for="description" :value="__('Description')"
-                                        class="text-lg font-medium" />
-                                    <textarea id="description" name="description" rows="3"
-                                        class="block mt-1 w-full rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                                        placeholder="Provide detailed information about this service">{{ old('description') }}</textarea>
-                                    <x-input-error :messages="$errors->get('description')" class="mt-1" />
-                                </div>
-
-                                <div class="mb-6">
-                                    <x-input-label for="requirements" :value="__('Requirements')"
-                                        class="text-lg font-medium" />
-                                    <textarea id="requirements" name="requirements" rows="2"
-                                        class="block mt-1 w-full rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                                        placeholder="List any prerequisites or requirements">{{ old('requirements') }}</textarea>
-                                    <x-input-error :messages="$errors->get('requirements')" class="mt-1" />
-                                </div>
-
-                                <div class="mb-6">
-                                    <x-input-label for="availability" :value="__('Availability')"
-                                        class="text-lg font-medium" />
-                                    <div class="relative rounded-md shadow-sm">
-                                        <div
-                                            class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                            <span class="text-gray-500 sm:text-sm">📅</span>
-                                        </div>
-                                        <x-text-input id="availability" class="block w-full pl-10" type="text"
-                                            name="availability" :value="old('availability')"
-                                            placeholder="e.g. Mon-Fri, 9am-5pm" />
-                                    </div>
-                                    <x-input-error :messages="$errors->get('availability')" class="mt-1" />
-                                </div>
-                            </form>
+                            </div>
+                            @error('price')
+                                <div class="text-danger text-xs">{{ $message }}</div>
+                            @enderror
                         </div>
                     </div>
-                </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="category" class="form-label ms-0 mb-2 d-flex align-items-center">
+                                <i class="material-symbols-rounded opacity-6 me-2">category</i>
+                                Category
+                            </label>
+                            <select id="category" name="category" class="form-select" required>
+                                <option value="">Select Category</option>
+                                <option value="Consultation" {{ old('category') == 'Consultation' ? 'selected' : '' }}>Consultation</option>
+                                <option value="Laboratory" {{ old('category') == 'Laboratory' ? 'selected' : '' }}>Laboratory</option>
+                                <option value="Surgery" {{ old('category') == 'Surgery' ? 'selected' : '' }}>Surgery</option>
+                                <option value="Therapy" {{ old('category') == 'Therapy' ? 'selected' : '' }}>Therapy</option>
+                                <option value="Diagnostic" {{ old('category') == 'Diagnostic' ? 'selected' : '' }}>Diagnostic</option>
+                                <option value="Wellness" {{ old('category') == 'Wellness' ? 'selected' : '' }}>Wellness</option>
+                                <option value="Other" {{ old('category') == 'Other' ? 'selected' : '' }}>Other</option>
+                            </select>
+                            @error('category')
+                                <div class="text-danger text-xs">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <div class="input-group input-group-dynamic mb-4">
+                                <span class="input-group-text"><i class="material-symbols-rounded opacity-6">schedule</i></span>
+                                <div class="form-floating ps-0">
+                                    <input type="text" class="form-control" id="duration" name="duration" :value="old('duration')" placeholder="e.g. 30 minutes, 1 hour" />
+                                    <label for="duration">Duration</label>
+                                </div>
+                            </div>
+                            @error('duration')
+                                <div class="text-danger text-xs">{{ $message }}</div>
+                            @enderror
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="description" class="form-label ms-0 mb-2 d-flex align-items-center">
+                            <i class="material-symbols-rounded opacity-6 me-2">description</i>
+                            Description
+                        </label>
+                        <textarea id="description" name="description" rows="3" class="form-control" placeholder="Provide detailed information about this service">{{ old('description') }}</textarea>
+                        @error('description')
+                            <div class="text-danger text-xs">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="requirements" class="form-label ms-0 mb-2 d-flex align-items-center">
+                            <i class="material-symbols-rounded opacity-6 me-2">checklist</i>
+                            Requirements
+                        </label>
+                        <textarea id="requirements" name="requirements" rows="2" class="form-control" placeholder="List any prerequisites or requirements">{{ old('requirements') }}</textarea>
+                        @error('requirements')
+                            <div class="text-danger text-xs">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="input-group input-group-dynamic mb-4">
+                            <span class="input-group-text"><i class="material-symbols-rounded opacity-6">event_available</i></span>
+                            <div class="form-floating ps-0">
+                                <input type="text" class="form-control" id="availability" name="availability" :value="old('availability')" placeholder="e.g. Mon-Fri, 9am-5pm" />
+                                <label for="availability">Availability</label>
+                            </div>
+                        </div>
+                        @error('availability')
+                            <div class="text-danger text-xs">{{ $message }}</div>
+                        @enderror
+                    </div>
+                </form>
             </div>
-            <div class="bg-gray-100 dark:bg-gray-700 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                <button type="button" id="submitForm"
-                    class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm">
-                    Create Service
-                </button>
-                <button type="button" id="closeModal"
-                    class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm dark:bg-gray-600 dark:text-gray-200 dark:border-gray-500 dark:hover:bg-gray-700">
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" id="closeModal" data-bs-dismiss="modal">
+                    <i class="material-symbols-rounded opacity-5 me-1">close</i>
                     Cancel
+                </button>
+                <button type="button" id="submitForm" class="btn bg-gradient-success">
+                    <i class="material-symbols-rounded opacity-5 me-1">save</i>
+                    Create Service
                 </button>
             </div>
         </div>

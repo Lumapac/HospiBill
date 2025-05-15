@@ -54,10 +54,24 @@ class PatientController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Patient $patient)
+    public function show(Request $request, Patient $patient)
     {
         $patient->load('service');
-        return view('app.patients.show', compact('patient'));
+        
+        // Check if this is an AJAX request, which would indicate it's for the modal
+        if ($request->ajax()) {
+            return response()->json([
+                'patient' => $patient,
+                'serviceName' => $patient->service->name ?? 'N/A',
+                'servicePrice' => $patient->service->price ?? 0
+            ]);
+        }
+        
+        // For direct URL access or backward compatibility, redirect to the index page
+        // with a flash message to view the patient details
+        return redirect()->route('patient.index')
+            ->with('patientToView', $patient->id)
+            ->with('info', 'Patient details are now viewed in a modal. Please use the view button.');
     }
 
     /**

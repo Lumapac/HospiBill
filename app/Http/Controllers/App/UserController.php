@@ -17,19 +17,8 @@ class UserController extends Controller
     public function index()
     {
         $users = User::with('roles')->get();
-        // dd($tenants->toArray());
-        return view('app.users.index', compact('users'));
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-
         $roles = SpatieRole::get();
-        return view('app.users.create', compact('roles'));
-        
+        return view('app.users.index', compact('users', 'roles'));
     }
 
     /**
@@ -57,6 +46,7 @@ class UserController extends Controller
 
         return redirect()->route('users.index')->with('success', 'User created successfully.');
     }
+
     /**
      * Display the specified resource.
      */
@@ -73,7 +63,6 @@ class UserController extends Controller
         $roles = SpatieRole::get();
         // dd($users->toArray());
         return view('app.users.edit', compact('user', 'roles'));
-
     }
 
     /**
@@ -81,17 +70,27 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
-        $validatedData = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255|unique:users,email,' . $user->id,
-            'roles' => 'required|array',
-
-        ]);
-        // dd($validatedData);
-        $user->update($validatedData);
-        $user->roles()->sync($request->input('roles'));
-
-        return redirect()->route('users.index')->with('success', 'User created successfully.');
+        try {
+            $validatedData = $request->validate([
+                'name' => 'required|string|max:255',
+                'email' => 'required|email|max:255|unique:users,email,' . $user->id,
+                'roles' => 'required|array',
+            ]);
+            
+            $user->update([
+                'name' => $validatedData['name'],
+                'email' => $validatedData['email'],
+            ]);
+            
+            $user->roles()->sync($request->input('roles'));
+            
+            return redirect()->route('users.index')->with('success', 'User updated successfully.');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return redirect()->route('users.index')
+                ->withErrors($e->validator)
+                ->with('editing', true)
+                ->withInput();
+        }
     }
 
     /**

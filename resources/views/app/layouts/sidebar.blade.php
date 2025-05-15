@@ -7,7 +7,7 @@
     <link rel="apple-touch-icon" sizes="76x76" href="../assets/img/apple-icon.png">
     <link rel="icon" type="image/png" href="../assets/img/favicon.png">
     <title>
-        Bethel
+        {{ tenant() ? tenant()->name : config('app.name') }}
     </title>
     <!--     Fonts and icons     -->
     <link rel="stylesheet" type="text/css"
@@ -30,50 +30,79 @@
         <div class="sidenav-header">
             <i class="fas fa-times p-3 cursor-pointer text-dark opacity-5 position-absolute end-0 top-0 d-none d-xl-none"
                 aria-hidden="true" id="iconSidenav"></i>
-            <a class="navbar-brand px-4 py-3 m-0"
-                href=" https://demos.creative-tim.com/material-dashboard/pages/dashboard " target="_blank">
-                <img src="../assets/img/logo-ct-dark.png" class="navbar-brand-img" width="26" height="26"
-                    alt="main_logo">
-                <span class="ms-1 text-sm text-dark">Bethel</span>
+            <a href="{{ route('dashboard') }}" class="text-decoration-none">
+                <div class="navbar-brand m-0 p-3 d-flex flex-column">
+                    <div class="d-flex align-items-center">
+                        <img src="../assets/img/logo-ct-dark.png" class="navbar-brand-img" width="32" height="32"
+                            alt="main_logo">
+                        <span class="ms-2 font-weight-bold text-dark">{{ tenant() ? tenant()->name : config('app.name') }}</span>
+                    </div>
+                    <p class="text-xs text-secondary mb-0 mt-1">{{ tenant() ? tenant()->name : config('app.name') }} Management System</p>
+                </div>
             </a>
         </div>
         <hr class="horizontal dark mt-0 mb-2">
         <div class="collapse navbar-collapse  w-auto " id="sidenav-collapse-main">
             <ul class="navbar-nav">
                 <li class="nav-item">
-                    <a class="nav-link active bg-gradient-dark text-white" href="../pages/dashboard.html">
+                    <a class="nav-link {{ request()->routeIs('dashboard') ? 'active bg-gradient-dark text-white' : 'text-dark' }}" href="{{ route('dashboard') }}">
                         <i class="material-symbols-rounded opacity-5">dashboard</i>
                         <span class="nav-link-text ms-1">Dashboard</span>
                     </a>
                 </li>
+
+                @role('admin')
                 <li class="nav-item">
-                    <a class="nav-link text-dark" href="../pages/tables.html">
+                    <a class="nav-link {{ request()->routeIs('users.index') ? 'active bg-gradient-dark text-white' : 'text-dark' }}" href="{{route('users.index')}}">
                         <i class="material-symbols-rounded opacity-5">table_view</i>
                         <span class="nav-link-text ms-1">User</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-dark" href="../pages/billing.html">
+                    <a class="nav-link {{ request()->routeIs('services.index') ? 'active bg-gradient-dark text-white' : 'text-dark' }}" href="{{route('services.index')}}">
                         <i class="material-symbols-rounded opacity-5">receipt_long</i>
                         <span class="nav-link-text ms-1">Services</span>
                     </a>
                 </li>
-                
+                @endrole
+
+                @role('doctor')
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('patient.index') ? 'active bg-gradient-dark text-white' : 'text-dark' }}" href="{{  route('patient.index') }}">
+                        <i class="material-symbols-rounded opacity-5">table_view</i>
+                        <span class="nav-link-text ms-1">Patient</span>
+                    </a>
+                </li>
+                @endrole
+
+                @role('cashier')
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('patient.bill') ? 'active bg-gradient-dark text-white' : 'text-dark' }}" href="{{ route('patient.bill') }}">
+                        <i class="material-symbols-rounded opacity-5">table_view</i>
+                        <span class="nav-link-text ms-1">Billing</span>
+                    </a>
+                </li>
+                @endrole
+
                 <li class="nav-item mt-3">
                     <h6 class="ps-4 ms-2 text-uppercase text-xs text-dark font-weight-bolder opacity-5">Account pages
                     </h6>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-dark" href="../pages/profile.html">
+                    <a class="nav-link {{ request()->routeIs('profile.edit') ? 'active bg-gradient-dark text-white' : 'text-dark' }}" href="{{ route('profile.edit') }}">
                         <i class="material-symbols-rounded opacity-5">person</i>
                         <span class="nav-link-text ms-1">Profile</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-dark" href="../pages/sign-in.html">
-                        <i class="material-symbols-rounded opacity-5">login</i>
-                        <span class="nav-link-text ms-1">Logout</span>
-                    </a>
+                    <form method="POST" action="{{ route('logout') }}" id="sidebar-logout-form">
+                        @csrf
+                        <a class="nav-link text-dark" href="{{ route('logout') }}"
+                            onclick="event.preventDefault(); document.getElementById('sidebar-logout-form').submit();">
+                            <i class="material-symbols-rounded opacity-5">logout</i>
+                            <span class="nav-link-text ms-1">Logout</span>
+                        </a>
+                    </form>
                 </li>
             </ul>
         </div>
