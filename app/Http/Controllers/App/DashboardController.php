@@ -98,13 +98,17 @@ class DashboardController extends Controller
             ->orderBy('updated_at', 'desc')
             ->paginate(10, ['*'], 'paid_page');
             
+        // Get a list of services for the create bill form
+        $services = Service::orderBy('name')->get();
+            
         return view('app.cashier-dashboard', compact(
             'todayCollections',
             'pendingPayments',
             'completedTransactions',
             'recentPatients',
             'pendingBills',
-            'paidBills'
+            'paidBills',
+            'services'
         ));
     }
 } 

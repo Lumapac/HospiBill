@@ -9,9 +9,19 @@
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,600&display=swap" rel="stylesheet" />
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
 
         <!-- Styles -->
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link href="{{ asset('assets/css/nucleo-icons.css') }}" rel="stylesheet" />
+        <link href="{{ asset('assets/css/nucleo-svg.css') }}" rel="stylesheet" />
+        <link id="pagestyle" href="{{ asset('assets/css/material-dashboard.css?v=3.2.0') }}" rel="stylesheet" />
+        
+        <!-- Font Awesome Icons -->
+        <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
+        
+        <!-- Alpine.js -->
+        <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     </head>
     <body class="font-sans antialiased bg-gray-100 dark:bg-gray-900">
         <div class="min-h-screen">
@@ -23,7 +33,7 @@
                     <div class="absolute inset-0 bg-indigo-800 dark:bg-indigo-900 mix-blend-multiply"></div>
                 </div>
                 <div class="relative max-w-7xl mx-auto py-24 px-4 sm:py-32 sm:px-6 lg:px-8">
-                    <h1 class="text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl">HospiBill Management System</h1>
+                    <h1 class="text-4xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl">{{ tenant() ? tenant()->name : config('app.name') }} Management System</h1>
                     <p class="mt-6 max-w-3xl text-xl text-indigo-100">Streamline your healthcare billing and patient management workflow with our comprehensive solution.</p>
                     @auth
                         <div class="mt-10">
@@ -223,4 +233,14 @@
             </div>
         </div>
     </body>
+    
+    <!-- Core JS Files -->
+    <script src="{{ asset('assets/js/core/popper.min.js') }}"></script>
+    <script src="{{ asset('assets/js/core/bootstrap.min.js') }}"></script>
+    <script src="{{ asset('assets/js/plugins/perfect-scrollbar.min.js') }}"></script>
+    <script src="{{ asset('assets/js/plugins/smooth-scrollbar.min.js') }}"></script>
+    <script src="{{ asset('assets/js/material-dashboard.min.js?v=3.2.0') }}"></script>
+    
+    <!-- Make sure Bootstrap JS is properly loaded -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </html>

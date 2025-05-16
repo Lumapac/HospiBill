@@ -9,12 +9,16 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,600&display=swap" rel="stylesheet" />
-    <!-- Tailwind CSS (Ensure it's included) -->
+    <!-- Google Material Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Alpine.js -->
+    <script defer src="https://unpkg.com/alpinejs@3.12.0/dist/cdn.min.js"></script>
 </head>
 
 <body class="font-sans antialiased bg-gray-100 dark:bg-gray-900">
-    <div class="min-h-screen">
+    <div x-data="{ loginModal: {{ request()->has('login') ? 'true' : 'false' }} }" class="min-h-screen">
         <!-- Navbar -->
         <nav class="bg-white dark:bg-gray-800 shadow">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -33,10 +37,10 @@
                                     Dashboard
                                 </a>
                             @else
-                                <a href="{{ route('login') }}"
+                                <button @click="loginModal = true"
                                     class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md transition duration-300">
                                     Log in
-                                </a>
+                                </button>
                                 @if (Route::has('register'))
                                     <a href="{{ route('register') }}"
                                         class="ml-4 px-4 py-2 text-sm font-medium bg-indigo-600 text-white hover:bg-indigo-700 rounded-md transition duration-300">
@@ -49,6 +53,9 @@
                 </div>
             </div>
         </nav>
+
+        <!-- Login Modal -->
+        <x-login-modal />
 
         <!-- Hero Section -->
         <div class="py-12 bg-indigo-600">
