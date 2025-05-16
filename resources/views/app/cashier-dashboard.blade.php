@@ -1,464 +1,471 @@
-<x-tenant-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Cashier Dashboard') }}
-        </h2>
-    </x-slot>
+@extends('app.layouts.sidebar')
+@section('title', 'Cashier Dashboard')
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
-            <!-- Quick Stats Section -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6">
-                        <h3 class="text-lg font-semibold mb-2">Today's Collections</h3>
-                        <p class="text-3xl font-bold text-blue-600">₱{{ number_format($todayCollections, 2) }}</p>
+@section('content')
+    <main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg">
+        @include('layouts.navbar', ['title' => 'Cashier Dashboard'])
+        
+        <div class="container-fluid py-4">         
+            <!-- Stats Cards -->
+            <div class="row mb-4">
+                <div class="col-xl-4 col-sm-6">
+                    <div class="card">
+                        <div class="card-header p-3 pt-2">
+                            <div class="icon icon-lg icon-shape bg-gradient-success shadow-success text-center border-radius-xl mt-n4 position-absolute">
+                                <i class="material-symbols-rounded opacity-10">payments</i>
+                            </div>
+                            <div class="text-end pt-1">
+                                <p class="text-sm mb-0 text-capitalize">Today's Collections</p>
+                                <h4 class="mb-0">₱{{ number_format($todayCollections, 2) }}</h4>
+                            </div>
+                        </div>
+                        <hr class="dark horizontal my-0">
+                        <div class="card-footer p-3">
+                            <div class="d-flex">
+                                <p class="mb-0 text-sm">Collections for {{ now()->format('M d, Y') }}</p>
+                                <i class="material-symbols-rounded text-success ms-auto">paid</i>
+                                <span class="text-success text-sm font-weight-bolder">Active</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6">
-                        <h3 class="text-lg font-semibold mb-2">Pending Payments</h3>
-                        <p class="text-3xl font-bold text-yellow-600">{{ $pendingPayments }}</p>
+                <div class="col-xl-4 col-sm-6">
+                    <div class="card">
+                        <div class="card-header p-3 pt-2">
+                            <div class="icon icon-lg icon-shape bg-gradient-warning shadow-warning text-center border-radius-xl mt-n4 position-absolute">
+                                <i class="material-symbols-rounded opacity-10">pending_actions</i>
+                            </div>
+                            <div class="text-end pt-1">
+                                <p class="text-sm mb-0 text-capitalize">Pending Payments</p>
+                                <h4 class="mb-0">{{ $pendingPayments }}</h4>
+                            </div>
+                        </div>
+                        <hr class="dark horizontal my-0">
+                        <div class="card-footer p-3">
+                            <div class="d-flex">
+                                <p class="mb-0 text-sm">Bills requiring payment</p>
+                                <i class="material-symbols-rounded text-warning ms-auto">update</i>
+                                <span class="text-warning text-sm font-weight-bolder">Pending</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6">
-                        <h3 class="text-lg font-semibold mb-2">Completed Transactions</h3>
-                        <p class="text-3xl font-bold text-green-600">{{ $completedTransactions }}</p>
+                <div class="col-xl-4 col-sm-6">
+                    <div class="card">
+                        <div class="card-header p-3 pt-2">
+                            <div class="icon icon-lg icon-shape bg-gradient-primary shadow-primary text-center border-radius-xl mt-n4 position-absolute">
+                                <i class="material-symbols-rounded opacity-10">task_alt</i>
+                            </div>
+                            <div class="text-end pt-1">
+                                <p class="text-sm mb-0 text-capitalize">Completed Transactions</p>
+                                <h4 class="mb-0">{{ $completedTransactions }}</h4>
+                            </div>
+                        </div>
+                        <hr class="dark horizontal my-0">
+                        <div class="card-footer p-3">
+                            <div class="d-flex">
+                                <p class="mb-0 text-sm">Fully paid bills</p>
+                                <i class="material-symbols-rounded text-primary ms-auto">verified</i>
+                                <span class="text-primary text-sm font-weight-bolder">Completed</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-            <!-- Unpaid Bills -->
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-lg font-semibold">Unpaid Bills</h3>
-                        <div class="flex space-x-2">
-                            <input type="text" id="searchPatient" placeholder="Search patient..." 
-                                class="rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+
+            <div class="row mt-4">
+                <!-- Recent Patients Table -->
+                <div class="col-lg-6 col-md-12 mb-4">
+                    <div class="card">
+                        <div class="card-header pb-0">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h6 class="mb-0">Recent Patients</h6>
+
+                            </div>
+                            <p class="text-sm mb-0 text-muted">Recently registered patients</p>
+                        </div>
+                        <div class="card-body px-0 pb-2">
+                            <div class="table-responsive">
+                                <table class="table align-items-center mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                                Patient</th>
+                                            <th
+                                                class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
+                                                Service</th>
+                                            <th
+                                                class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                                Date</th>
+                                            <th 
+                                                class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                                Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($recentPatients as $patient)
+                                            <tr>
+                                                <td>
+                                                    <div class="d-flex px-2 py-1">
+                                                        <div class="avatar avatar-sm me-3 bg-gradient-success rounded-circle">
+                                                            <span class="text-white text-uppercase">{{ substr($patient->first_name, 0, 1) }}</span>
+                                                        </div>
+                                                        <div class="d-flex flex-column justify-content-center">
+                                                            <h6 class="mb-0 text-sm">{{ $patient->first_name }}
+                                                                {{ $patient->last_name }}</h6>
+                                                            <p class="text-xs text-secondary mb-0">{{ $patient->email }}</p>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <span class="badge bg-gradient-info">
+                                                        {{ $patient->service ? $patient->service->name : 'No service' }}
+                                                    </span>
+                                                </td>
+                                                <td class="align-middle text-center">
+                                                    <span class="text-secondary text-xs font-weight-bold">
+                                                        {{ $patient->created_at->format('M d, Y') }}
+                                                    </span>
+                                                </td>
+                                                <td class="align-middle text-center">
+                                                    <button class="btn btn-link text-primary px-3 mb-0 view-patient" data-id="{{ $patient->id }}">
+                                                        <i class="material-symbols-rounded text-sm me-1">visibility</i>View
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-gray-50 dark:bg-gray-700">
-                                <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Bill ID</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Patient Name</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Service</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Amount Due</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Due Date</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="unpaidBillsTable" class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                                @foreach ($pendingBills ?? [] as $bill)
-                                <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ $bill->bill_number }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ $bill->patient->first_name }} {{ $bill->patient->last_name }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ $bill->service->name }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap font-semibold text-red-600">₱{{ number_format($bill->amount - $bill->amount_paid, 2) }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ \Carbon\Carbon::parse($bill->due_date)->format('M d, Y') }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        @if($bill->status === 'pending')
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">Pending</span>
-                                        @elseif($bill->status === 'partially_paid')
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">Partially Paid</span>
-                                        @elseif($bill->status === 'overdue')
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Overdue</span>
-                                        @else
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">{{ ucfirst($bill->status) }}</span>
+                </div>
+                
+                <!-- Pending Bills -->
+                <div class="col-lg-6 col-md-12 mb-4">
+                    <div class="card">
+                        <div class="card-header pb-0">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h6 class="mb-0">Pending Bills</h6>
+                                <a href="{{ route('patient.bill') }}" class="btn btn-link text-dark px-3 mb-0">
+                                    <i class="material-symbols-rounded text-sm me-1">visibility</i>View All
+                                </a>
+                            </div>
+                            <p class="text-sm mb-0 text-muted">Bills requiring payment attention</p>
+                        </div>
+                        <div class="card-body px-0 pb-2">
+                            <div class="table-responsive">
+                                <table class="table align-items-center mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                                Bill ID</th>
+                                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
+                                                Patient</th>
+                                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
+                                                Amount Due</th>
+                                            <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                                Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($pendingBills->take(5) as $bill)
+                                            <tr>
+                                                <td>
+                                                    <div class="d-flex px-2 py-1">
+                                                        <div class="d-flex flex-column justify-content-center">
+                                                            <h6 class="mb-0 text-sm">{{ $bill->bill_number }}</h6>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="d-flex px-2 py-1">
+                                                        <div class="d-flex flex-column justify-content-center">
+                                                            <h6 class="mb-0 text-sm">{{ $bill->patient->first_name }} {{ $bill->patient->last_name }}</h6>
+                                                            <p class="text-xs text-secondary mb-0">{{ $bill->service->name }}</p>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <span class="text-xs font-weight-bold text-danger">
+                                                        ₱{{ number_format($bill->amount - $bill->amount_paid, 2) }}
+                                                    </span>
+                                                </td>
+                                                <td class="align-middle text-center">
+                                                    @if($bill->status === 'pending')
+                                                        <span class="badge badge-sm bg-gradient-warning">Pending</span>
+                                                    @elseif($bill->status === 'partially_paid')
+                                                        <span class="badge badge-sm bg-gradient-info">Partially Paid</span>
+                                                    @elseif($bill->status === 'overdue')
+                                                        <span class="badge badge-sm bg-gradient-danger">Overdue</span>
+                                                    @endif
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                        @if(count($pendingBills ?? []) === 0)
+                                            <tr>
+                                                <td colspan="4" class="text-center py-4 text-secondary">No pending bills found</td>
+                                            </tr>
                                         @endif
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="flex space-x-2">
-                                            <a href="{{ route('patient.bill.view', $bill->id) }}" class="text-blue-600 hover:text-blue-900 text-sm">
-                                                View Details
-                                            </a>
-                                        </div>
-                                    </td>
-                                </tr>
-                                @endforeach
-                                @if(count($pendingBills ?? []) === 0)
-                                    <tr>
-                                        <td colspan="7" class="px-6 py-4 text-center text-gray-500">No unpaid bills found</td>
-                                    </tr>
-                                @endif
-                            </tbody>
-                        </table>
-                    </div>
-                    <!-- Pagination -->
-                    @if(isset($pendingBills) && $pendingBills->hasPages())
-                    <div class="mt-4 flex items-center justify-between">
-                        <div class="text-sm text-gray-500">
-                            Showing {{ $pendingBills->firstItem() }} to {{ $pendingBills->lastItem() }} of {{ $pendingBills->total() }} entries
-                        </div>
-                        <div class="flex space-x-2">
-                            {{ $pendingBills->links() }}
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
-                    @endif
                 </div>
             </div>
 
-            <!-- Fully Paid Bills -->
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-lg font-semibold">Fully Paid Bills</h3>
-                        <div class="flex space-x-2">
-                            <input type="text" id="searchPaidPatient" placeholder="Search paid patient..." 
-                                class="rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+            <div class="row">
+                <!-- Paid Bills -->
+                <div class="col-12 mb-4">
+                    <div class="card">
+                        <div class="card-header pb-0">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h6 class="mb-0">Recent Payments</h6>
+                            </div>
+                            <p class="text-sm mb-0 text-muted">Recent fully paid bills</p>
                         </div>
-                    </div>
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-gray-50 dark:bg-gray-700">
-                                <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Bill ID</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Patient Name</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Service</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Total Amount</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Paid Date</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Payment Method</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="paidBillsTable" class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                                @foreach ($paidBills ?? [] as $bill)
-                                <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ $bill->bill_number }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ $bill->patient->first_name }} {{ $bill->patient->last_name }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ $bill->service->name }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap font-semibold text-green-600">₱{{ number_format($bill->amount, 2) }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">{{ \Carbon\Carbon::parse($bill->updated_at)->format('M d, Y') }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        @if($bill->payments->isNotEmpty())
-                                            @php 
-                                                $lastPayment = $bill->payments->sortByDesc('created_at')->first();
-                                                $paymentMethod = ucfirst($lastPayment->payment_method);
-                                            @endphp
-                                            {{ $paymentMethod }}
-                                        @else
-                                            N/A
+                        <div class="card-body px-0 pb-2">
+                            <div class="table-responsive">
+                                <table class="table align-items-center mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                                Bill ID</th>
+                                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
+                                                Patient</th>
+                                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">
+                                                Amount Paid</th>
+                                            <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                                Payment Date</th>
+                                            <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                                Payment Method</th>
+                                            <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                                Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($paidBills->take(5) as $bill)
+                                            <tr>
+                                                <td>
+                                                    <div class="d-flex px-2 py-1">
+                                                        <div class="d-flex flex-column justify-content-center">
+                                                            <h6 class="mb-0 text-sm">{{ $bill->bill_number }}</h6>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="d-flex px-2 py-1">
+                                                        <div class="d-flex flex-column justify-content-center">
+                                                            <h6 class="mb-0 text-sm">{{ $bill->patient->first_name }} {{ $bill->patient->last_name }}</h6>
+                                                            <p class="text-xs text-secondary mb-0">{{ $bill->service->name }}</p>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <span class="text-xs font-weight-bold text-success">
+                                                        ₱{{ number_format($bill->amount, 2) }}
+                                                    </span>
+                                                </td>
+                                                <td class="align-middle text-center">
+                                                    <span class="text-secondary text-xs font-weight-bold">
+                                                        {{ \Carbon\Carbon::parse($bill->updated_at)->format('M d, Y') }}
+                                                    </span>
+                                                </td>
+                                                <td class="align-middle text-center">
+                                                    @if($bill->payments->isNotEmpty())
+                                                        @php 
+                                                            $lastPayment = $bill->payments->sortByDesc('created_at')->first();
+                                                            $paymentMethod = ucfirst($lastPayment->payment_method);
+                                                        @endphp
+                                                        <span class="badge badge-sm bg-gradient-success">{{ $paymentMethod }}</span>
+                                                    @else
+                                                        <span class="badge badge-sm bg-gradient-secondary">N/A</span>
+                                                    @endif
+                                                </td>
+                                                <td class="align-middle text-center">
+                                                    <button type="button"
+                                                        class="btn btn-link text-primary px-3 mb-0 view-bill-btn"
+                                                        data-bill-id="{{ $bill->id }}">
+                                                        <i class="material-symbols-rounded text-sm me-1">visibility</i>View
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                        @if(count($paidBills ?? []) === 0)
+                                            <tr>
+                                                <td colspan="6" class="text-center py-4 text-secondary">No paid bills found</td>
+                                            </tr>
                                         @endif
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="flex space-x-2">
-                                            <a href="{{ route('patient.bill.view', $bill->id) }}" class="text-blue-600 hover:text-blue-900 text-sm">
-                                                View Details
-                                            </a>
-                                        </div>
-                                    </td>
-                                </tr>
-                                @endforeach
-                                @if(count($paidBills ?? []) === 0)
-                                    <tr>
-                                        <td colspan="7" class="px-6 py-4 text-center text-gray-500">No fully paid bills found</td>
-                                    </tr>
-                                @endif
-                            </tbody>
-                        </table>
-                    </div>
-                    <!-- Pagination -->
-                    @if(isset($paidBills) && $paidBills->hasPages())
-                    <div class="mt-4 flex items-center justify-between">
-                        <div class="text-sm text-gray-500">
-                            Showing {{ $paidBills->firstItem() }} to {{ $paidBills->lastItem() }} of {{ $paidBills->total() }} entries
-                        </div>
-                        <div class="flex space-x-2">
-                            {{ $paidBills->links() }}
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
-                    @endif
                 </div>
             </div>
         </div>
-    </div>
+    </main>
 
-    <!-- Create Bill Modal -->
-    <div id="createBillModal" class="fixed inset-0 z-50 overflow-y-auto hidden">
-        <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-            <div class="fixed inset-0 transition-opacity">
-                <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
-            </div>
-            <span class="hidden sm:inline-block sm:align-middle sm:h-screen"></span>&#8203;
-            <div class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-                <div class="bg-white dark:bg-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                    <div>
-                        <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100 mb-4">Create New Bill</h3>
-                        <form id="createBillForm" action="{{ route('patient.bill.create') }}" method="POST">
-                            @csrf
-                            <div class="mb-4">
-                                <label for="patient_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Patient</label>
-                                <select id="patient_id" name="patient_id" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
-                                    <option value="">Select a patient</option>
-                                    @foreach($recentPatients as $patient)
-                                        <option value="{{ $patient->id }}">{{ $patient->first_name }} {{ $patient->last_name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="mb-4">
-                                <label for="service_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Service</label>
-                                <select id="service_id" name="service_id" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
-                                    <option value="">Select a service</option>
-                                    @foreach($services ?? [] as $service)
-                                        <option value="{{ $service->id }}" data-price="{{ $service->price }}">{{ $service->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="mb-4">
-                                <label for="amount" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Amount</label>
-                                <input type="number" step="0.01" id="amount" name="amount" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
-                            </div>
-                            <div class="mb-4">
-                                <label for="due_date" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Due Date</label>
-                                <input type="date" id="due_date" name="due_date" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
-                            </div>
-                            <div class="mb-4">
-                                <label for="notes" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Notes</label>
-                                <textarea id="notes" name="notes" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"></textarea>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-                <div class="bg-gray-50 dark:bg-gray-700 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                    <button type="submit" form="createBillForm" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm">
-                        Create Bill
-                    </button>
-                    <button type="button" id="cancelCreateBill" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
-                        Cancel
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
+    <!-- Include Bill View Modal -->
+    @php
+        $viewBillModalPath = 'app.cashier.view-bill-modal';
+        echo "<!-- Including modal from: $viewBillModalPath -->";
+    @endphp
+    @include($viewBillModalPath)
+    
+    <!-- Include Patient View Modal -->
+    @include('app.patients.view_patient_modal')
 
-    <!-- Process Payment Modal -->
-    <div id="processPaymentModal" class="fixed inset-0 z-50 overflow-y-auto hidden">
-        <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-            <div class="fixed inset-0 transition-opacity">
-                <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
-            </div>
-            <span class="hidden sm:inline-block sm:align-middle sm:h-screen"></span>&#8203;
-            <div class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-                <div class="bg-white dark:bg-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                    <div>
-                        <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100 mb-4">Process Payment</h3>
-                        <div class="mb-4">
-                            <p class="text-sm text-gray-500 dark:text-gray-400">
-                                Processing payment for <span id="paymentPatientName" class="font-bold"></span>
-                            </p>
-                            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                                Bill #: <span id="paymentBillNumber" class="font-bold"></span>
-                            </p>
-                            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                                Amount Due: ₱<span id="paymentAmountDue" class="font-bold"></span>
-                            </p>
-                        </div>
-                        <form id="processPaymentForm" action="" method="POST">
-                            @csrf
-                            <div class="mb-4">
-                                <label for="payment_amount" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Payment Amount</label>
-                                <input type="number" step="0.01" id="payment_amount" name="amount" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
-                            </div>
-                            <div class="mb-4">
-                                <label for="payment_method" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Payment Method</label>
-                                <select id="payment_method" name="payment_method" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
-                                    <option value="cash">Cash</option>
-                                    <option value="card">Card</option>
-                                    <option value="bank_transfer">Bank Transfer</option>
-                                    <option value="other">Other</option>
-                                </select>
-                            </div>
-                            <div class="mb-4">
-                                <label for="reference_number" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Reference Number</label>
-                                <input type="text" id="reference_number" name="reference_number" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
-                            </div>
-                            <div class="mb-4">
-                                <label for="payment_notes" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Notes</label>
-                                <textarea id="payment_notes" name="notes" rows="2" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"></textarea>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-                <div class="bg-gray-50 dark:bg-gray-700 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                    <button type="submit" form="processPaymentForm" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:ml-3 sm:w-auto sm:text-sm">
-                        Complete Payment
-                    </button>
-                    <button type="button" id="cancelProcessPayment" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
-                        Cancel
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    @push('scripts')
+    <!-- Scripts for handling the modal display -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Create Bill Modal Logic
-            const createBillBtn = document.getElementById('createBillBtn');
-            const createBillModal = document.getElementById('createBillModal');
-            const cancelCreateBill = document.getElementById('cancelCreateBill');
-            const patientSelect = document.getElementById('patient_id');
-            const serviceSelect = document.getElementById('service_id');
-            const amountInput = document.getElementById('amount');
-            const dueDateInput = document.getElementById('due_date');
-            
-            // Set default due date to 7 days from now
-            const defaultDueDate = new Date();
-            defaultDueDate.setDate(defaultDueDate.getDate() + 7);
-            dueDateInput.value = defaultDueDate.toISOString().split('T')[0];
-            
-            createBillBtn.addEventListener('click', function() {
-                createBillModal.classList.remove('hidden');
-            });
-            
-            cancelCreateBill.addEventListener('click', function() {
-                createBillModal.classList.add('hidden');
-            });
-            
-            // Update amount when service is selected
-            serviceSelect.addEventListener('change', function() {
-                const selectedOption = serviceSelect.options[serviceSelect.selectedIndex];
-                if (selectedOption && selectedOption.dataset.price) {
-                    amountInput.value = selectedOption.dataset.price;
-                }
-            });
-            
-            // Create bill for specific patient buttons
-            const createBillForPatientBtns = document.querySelectorAll('.createBillForPatient');
-            createBillForPatientBtns.forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const patientId = this.dataset.patientId;
-                    const serviceId = this.dataset.serviceId;
-                    const servicePrice = this.dataset.servicePrice;
-                    
-                    // Set the values in the modal
-                    patientSelect.value = patientId;
-                    serviceSelect.value = serviceId;
-                    amountInput.value = servicePrice;
-                    
-                    // Show the modal
-                    createBillModal.classList.remove('hidden');
-                });
-            });
+            // The view_patient_modal.blade.php contains its own event listeners
+            // No additional code needed for patient view functionality
 
-            // Form submission handling
-            const createBillForm = document.getElementById('createBillForm');
-            createBillForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                
-                // Basic validation
-                if (!patientSelect.value || !serviceSelect.value || !amountInput.value || !dueDateInput.value) {
-                    alert('Please fill in all required fields');
-                    return;
-                }
-                
-                try {
-                    // Log form data for debugging
-                    console.log('Submitting form with data:', {
-                        patient_id: patientSelect.value,
-                        service_id: serviceSelect.value,
-                        amount: amountInput.value,
-                        due_date: dueDateInput.value,
-                        notes: document.getElementById('notes').value
-                    });
+            // Add event listeners to all "View Bill" buttons
+            document.querySelectorAll('.view-bill-btn').forEach(function(button) {
+                button.addEventListener('click', function() {
+                    const billId = this.getAttribute('data-bill-id');
                     
-                    // Submit the form
-                    this.submit();
-                } catch (error) {
-                    console.error('Error submitting form:', error);
-                    alert('An error occurred while submitting the form. Please try again.');
-                }
-            });
-
-            // Close modal when clicking outside
-            window.addEventListener('click', function(e) {
-                if (e.target === createBillModal) {
-                    createBillModal.classList.add('hidden');
-                }
-            });
-
-            // Process Payment Modal Logic
-            const processPaymentBtns = document.querySelectorAll('.processPaymentBtn');
-            const processPaymentModal = document.getElementById('processPaymentModal');
-            const cancelProcessPayment = document.getElementById('cancelProcessPayment');
-            const paymentPatientName = document.getElementById('paymentPatientName');
-            const paymentBillNumber = document.getElementById('paymentBillNumber');
-            const paymentAmountDue = document.getElementById('paymentAmountDue');
-            const paymentForm = document.getElementById('processPaymentForm');
-            const paymentAmountInput = document.getElementById('payment_amount');
-            
-            processPaymentBtns.forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const billId = this.dataset.billId;
-                    const billNumber = this.dataset.billNumber;
-                    const patientName = this.dataset.patientName;
-                    const amountDue = this.dataset.amountDue;
+                    // Set the PDF link
+                    const downloadPdfLink = document.getElementById('downloadPdfLink');
+                    if (downloadPdfLink) {
+                        downloadPdfLink.href = `/billing/${billId}/pdf`;
+                    }
                     
-                    // Set the values in the modal
-                    paymentPatientName.textContent = patientName;
-                    paymentBillNumber.textContent = billNumber;
-                    paymentAmountDue.textContent = parseFloat(amountDue).toFixed(2);
-                    paymentAmountInput.value = amountDue;
-                    paymentAmountInput.max = amountDue;
-                    
-                    // Set the form action
-                    paymentForm.action = `/billing/${billId}/process-payment`;
-                    
-                    // Show the modal
-                    processPaymentModal.classList.remove('hidden');
+                    // Fetch bill data and populate modal
+                    fetch(`/api/bills/${billId}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            // Populate Bill Information
+                            document.getElementById('billNumber').textContent = data.bill_number;
+                            document.getElementById('createdDate').textContent = new Date(data.created_at).toLocaleDateString('en-US', {year: 'numeric', month: 'short', day: 'numeric'});
+                            document.getElementById('dueDate').textContent = new Date(data.due_date).toLocaleDateString('en-US', {year: 'numeric', month: 'short', day: 'numeric'});
+                            
+                            // Set status with appropriate badge class
+                            const statusElement = document.getElementById('billStatus');
+                            statusElement.textContent = data.status.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
+                            
+                            // Clear existing classes and add new ones
+                            statusElement.className = 'badge badge-sm';
+                            if (data.status === 'paid') {
+                                statusElement.classList.add('bg-gradient-success');
+                            } else if (data.status === 'partially_paid') {
+                                statusElement.classList.add('bg-gradient-info');
+                            } else if (data.status === 'pending') {
+                                statusElement.classList.add('bg-gradient-warning');
+                            } else if (data.status === 'overdue') {
+                                statusElement.classList.add('bg-gradient-danger');
+                            }
+                            
+                            document.getElementById('billNotes').textContent = data.notes || 'No notes';
+                            
+                            // Populate Patient Information
+                            document.getElementById('patientName').textContent = `${data.patient.first_name} ${data.patient.last_name}`;
+                            document.getElementById('patientEmail').textContent = data.patient.email || 'No email';
+                            document.getElementById('patientPhone').textContent = data.patient.phone || 'No phone';
+                            document.getElementById('serviceName').textContent = data.service ? data.service.name : 'No service';
+                            
+                            // Populate Financial Summary
+                            document.getElementById('totalAmount').textContent = `₱${parseFloat(data.amount).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+                            document.getElementById('amountPaid').textContent = `₱${parseFloat(data.amount_paid).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+                            
+                            const remainingBalance = parseFloat(data.amount) - parseFloat(data.amount_paid);
+                            document.getElementById('remainingBalance').textContent = `₱${remainingBalance.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+                            
+                            // Populate Payment History
+                            const paymentHistoryBody = document.getElementById('paymentHistoryBody');
+                            paymentHistoryBody.innerHTML = '';
+                            
+                            if (data.payments && data.payments.length > 0) {
+                                data.payments.forEach(payment => {
+                                    const row = document.createElement('tr');
+                                    
+                                    // Payment Date
+                                    const dateCell = document.createElement('td');
+                                    dateCell.className = 'text-xs';
+                                    dateCell.textContent = new Date(payment.created_at).toLocaleDateString('en-US', {year: 'numeric', month: 'short', day: 'numeric'});
+                                    row.appendChild(dateCell);
+                                    
+                                    // Amount
+                                    const amountCell = document.createElement('td');
+                                    amountCell.className = 'text-xs font-weight-bold text-success';
+                                    amountCell.textContent = `₱${parseFloat(payment.amount).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+                                    row.appendChild(amountCell);
+                                    
+                                    // Payment Method
+                                    const methodCell = document.createElement('td');
+                                    methodCell.className = 'text-xs';
+                                    methodCell.textContent = payment.payment_method.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
+                                    row.appendChild(methodCell);
+                                    
+                                    // Reference Number
+                                    const referenceCell = document.createElement('td');
+                                    referenceCell.className = 'text-xs';
+                                    referenceCell.textContent = payment.reference_number || 'N/A';
+                                    row.appendChild(referenceCell);
+                                    
+                                    // Processed By
+                                    const processedByCell = document.createElement('td');
+                                    processedByCell.className = 'text-xs';
+                                    processedByCell.textContent = payment.processed_by ? payment.processed_by.name : 'System';
+                                    row.appendChild(processedByCell);
+                                    
+                                    // Notes
+                                    const notesCell = document.createElement('td');
+                                    notesCell.className = 'text-xs';
+                                    notesCell.textContent = payment.notes || 'No notes';
+                                    row.appendChild(notesCell);
+                                    
+                                    paymentHistoryBody.appendChild(row);
+                                });
+                            } else {
+                                const row = document.createElement('tr');
+                                const cell = document.createElement('td');
+                                cell.colSpan = 6;
+                                cell.className = 'text-center py-4 text-secondary';
+                                cell.textContent = 'No payment history found';
+                                row.appendChild(cell);
+                                paymentHistoryBody.appendChild(row);
+                            }
+                            
+                            // Set up process payment functionality
+                            const processPaymentBtn = document.getElementById('processPaymentBtn');
+                            if (processPaymentBtn) {
+                                // Hide process payment button if bill is already paid
+                                if (data.status === 'paid') {
+                                    processPaymentBtn.style.display = 'none';
+                                } else {
+                                    processPaymentBtn.style.display = '';
+                                }
+                                
+                                processPaymentBtn.onclick = function() {
+                                    // Setup payment modal
+                                    document.getElementById('paymentPatientName').textContent = `${data.patient.first_name} ${data.patient.last_name}`;
+                                    document.getElementById('paymentBillNumber').textContent = data.bill_number;
+                                    document.getElementById('paymentAmountDue').textContent = `₱${remainingBalance.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+                                    document.getElementById('payment_amount').value = remainingBalance.toFixed(2);
+                                    document.getElementById('processPaymentForm').action = `/patient/bill/${billId}/payment`;
+                                    
+                                    // Hide the view modal and show the payment modal
+                                    bootstrap.Modal.getInstance(document.getElementById('viewBillModal')).hide();
+                                    const paymentModal = new bootstrap.Modal(document.getElementById('processPaymentModal'));
+                                    paymentModal.show();
+                                };
+                            }
+                            
+                            // Show the modal
+                            const viewModal = new bootstrap.Modal(document.getElementById('viewBillModal'));
+                            viewModal.show();
+                        })
+                        .catch(error => {
+                            console.error('Error fetching bill data:', error);
+                            alert('Error loading bill data. Please try again.');
+                        });
                 });
             });
-            
-            cancelProcessPayment.addEventListener('click', function() {
-                processPaymentModal.classList.add('hidden');
-            });
-            
-            // Search patients logic
-            const searchPatientInput = document.getElementById('searchPatient');
-            const unpaidBillsTable = document.getElementById('unpaidBillsTable');
-            
-            if (searchPatientInput) {
-                searchPatientInput.addEventListener('keyup', function() {
-                    const searchValue = this.value.toLowerCase();
-                    const rows = unpaidBillsTable.querySelectorAll('tr');
-                    
-                    rows.forEach(row => {
-                        const patientName = row.cells[1]?.textContent.toLowerCase() || '';
-                        
-                        if (patientName.includes(searchValue)) {
-                            row.style.display = '';
-                        } else {
-                            row.style.display = 'none';
-                        }
-                    });
-                });
-            }
-            
-            // Search paid patients logic
-            const searchPaidPatientInput = document.getElementById('searchPaidPatient');
-            const paidBillsTable = document.getElementById('paidBillsTable');
-            
-            if (searchPaidPatientInput) {
-                searchPaidPatientInput.addEventListener('keyup', function() {
-                    const searchValue = this.value.toLowerCase();
-                    const rows = paidBillsTable.querySelectorAll('tr');
-                    
-                    rows.forEach(row => {
-                        const patientName = row.cells[1]?.textContent.toLowerCase() || '';
-                        
-                        if (patientName.includes(searchValue)) {
-                            row.style.display = '';
-                        } else {
-                            row.style.display = 'none';
-                        }
-                    });
-                });
-            }
         });
     </script>
-    @endpush
-</x-tenant-app-layout> 
+@endsection
+   

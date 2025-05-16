@@ -141,12 +141,16 @@ class CashierController extends Controller
             }
         }
         
-        return redirect()->route('patient.bill.view', $bill->id)->with('success', $successMessage);
+        return redirect()->route('patient.bill')->with('success', $successMessage);
     }
     
     public function viewBill(Bill $bill)
     {
         $bill->load(['patient', 'service', 'payments.cashier']);
+        
+        if (request()->wantsJson()) {
+            return response()->json($bill);
+        }
         
         return view('app.cashier.view-bill', compact('bill'));
     }

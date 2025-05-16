@@ -71,11 +71,13 @@ Route::middleware([
             Route::resource('services', ServiceController::class);
         });
 
+        // Patient routes - show route accessible to both doctors and cashiers
+        Route::get('/patient/{patient}', [PatientController::class, 'show'])->name('patient.show');
+        
         Route::group(['middleware' => ['role:doctor']], function () {
             Route::get('/patient', [PatientController::class, 'index'])->name('patient.index');
             Route::get('/patient/register', [PatientController::class, 'register'])->name('patient.register');
             Route::post('/patient/store', [PatientController::class, 'store'])->name('patient.store');
-            Route::get('/patient/{patient}', [PatientController::class, 'show'])->name('patient.show');
             Route::get('/patient/{patient}/edit', [PatientController::class, 'edit'])->name('patient.edit');
             Route::put('/patient/{patient}', [PatientController::class, 'update'])->name('patient.update');
             Route::delete('/patient/{patient}', [PatientController::class, 'destroy'])->name('patient.destroy');
@@ -92,6 +94,12 @@ Route::middleware([
             Route::get('/patient/{patient}/services', [CashierController::class, 'getPatientServices'])->name('patient.services');
             Route::get('/billing/all', [CashierController::class, 'listAllBills'])->name('patient.bill.all');
         });
+
+        // API route for bill details
+        Route::get('/api/bills/{bill}', function(App\Models\Bill $bill) {
+            $bill->load(['patient', 'service', 'payments.cashier']);
+            return response()->json($bill);
+        })->name('api.bill.show');
     });
 
 

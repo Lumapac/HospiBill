@@ -84,10 +84,12 @@
                     <i class="material-symbols-rounded opacity-5 me-1">close</i>
                     Close
                 </button>
+                @if(!auth()->user()->hasRole('cashier'))
                 <button type="button" class="btn bg-gradient-success edit-from-view" id="editFromViewBtn">
                     <i class="material-symbols-rounded opacity-5 me-1">edit</i>
                     Edit Patient
                 </button>
+                @endif
             </div>
         </div>
     </div>
