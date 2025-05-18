@@ -25,10 +25,10 @@
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
-                        </div>
-                    @endif
-                    
-                    @if (session('info'))
+                </div>
+            @endif
+
+            @if (session('info'))
                 <div class="alert alert-info alert-dismissible fade show" role="alert">
                     <span class="alert-icon align-middle">
                         <span class="material-symbols-rounded opacity-10">info</span>
@@ -37,9 +37,9 @@
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
-                        </div>
-                    @endif
-                    
+                </div>
+            @endif
+
             <!-- Tenants Table -->
             <div class="row">
                 <div class="col-12">
@@ -66,11 +66,14 @@
                                                 Status</th>
                                             <th
                                                 class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                                Subscription</th>
+                                            <th
+                                                class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
                                                 Contact</th>
                                             <th class="text-secondary opacity-7"></th>
-                                </tr>
-                            </thead>
-                            <tbody>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
                                         @foreach($tenants as $tenant)
                                             <tr>
                                                 <td>
@@ -80,17 +83,26 @@
                                                             <p class="text-xs text-secondary mb-0">{{ $tenant->email }}</p>
                                                         </div>
                                                     </div>
-                                        </td>
+                                                </td>
                                                 <td>
                                                     <p class="text-xs font-weight-bold mb-0">
-                                            @foreach ($tenant->domains as $domain)
-                                                {{ $domain->domain }}{{ $loop->last ? '' : ', ' }}
-                                            @endforeach
+                                                        @foreach ($tenant->domains as $domain)
+                                                            {{ $domain->domain }}{{ $loop->last ? '' : ', ' }}
+                                                        @endforeach
                                                     </p>
-                                        </td>
+                                                </td>
                                                 <td class="align-middle text-center text-sm">
-                                            {!! $tenant->status_badge !!}
-                                        </td>
+                                                    {!! $tenant->status_badge !!}
+                                                </td>
+                                                <td class="align-middle text-center text-sm">
+                                                    @if($tenant->status !== 'rejected')
+                                                        <span class="badge rounded-pill text-bg-{{ $tenant->subscription === 'free' ? 'secondary' : ($tenant->subscription === 'standard' ? 'primary' : 'success') }}">
+                                                            {{ ucfirst($tenant->subscription) }}
+                                                        </span>
+                                                    @else
+                                                        <span class="badge rounded-pill text-bg-secondary">N/A</span>
+                                                    @endif
+                                                </td>
                                                 <td class="align-middle text-center">
                                                     <span
                                                         class="text-secondary text-xs font-weight-bold">{{ $tenant->contact_person ?? 'N/A' }}</span>
@@ -107,133 +119,79 @@
                                                             data-tenant-status="{{ $tenant->status }}"
                                                             data-tenant-contact="{{ $tenant->contact_person }}"
                                                             data-tenant-phone="{{ $tenant->phone_number }}"
+                                                            data-tenant-subscription="{{ $tenant->status !== 'rejected' ? $tenant->subscription : '' }}"
                                                             data-tenant-domains="@foreach($tenant->domains as $domain){{ $domain->domain }}{{ $loop->last ? '' : ', ' }}@endforeach"
-                                                            data-tenant-created="{{ $tenant->created_at->format('F d, Y H:i') }}"
-                                                            data-tenant-notes="{{ $tenant->admin_notes }}">
+                                                            data-tenant-created="{{ $tenant->created_at ? $tenant->created_at->format('F d, Y H:i') : 'N/A' }}"
+                                                            data-tenant-notes="{{ $tenant->admin_notes }}"
+                                                            data-tenant-rejected="{{ $tenant->rejected_at ? date('F d, Y H:i', strtotime($tenant->rejected_at)) : 'N/A' }}"
+                                                            data-tenant-rejected-by="{{ $tenant->rejected_by ?? 'N/A' }}">
                                                             <i class="material-symbols-rounded text-sm me-2">visibility</i>
                                                             View
                                                         </button>
-                                                        <button type="button"
-                                                            class="btn btn-link text-dark px-1 mb-0 edit-tenant-btn"
-                                                            data-tenant-id="{{ $tenant->id }}"
-                                                            data-tenant-name="{{ $tenant->name }}"
-                                                            data-tenant-email="{{ $tenant->email }}"
-                                                            data-tenant-status="{{ $tenant->status }}"
-                                                            data-tenant-contact="{{ $tenant->contact_person }}"
-                                                            data-tenant-phone="{{ $tenant->phone_number }}"
-                                                            data-tenant-notes="{{ $tenant->admin_notes }}">
-                                                            <i class="material-symbols-rounded text-sm me-2">edit</i>
-                                                            Edit
-                                                        </button>
-                                            
-                                            @if($tenant->status === 'pending')
+        
+                                                        @if($tenant->status === 'pending')
                                                             <form action="{{ route('tenants.approve', $tenant) }}" method="POST"
                                                                 class="d-inline">
-                                                    @csrf
-                                                    @method('PATCH')
+                                                                @csrf
+                                                                @method('PATCH')
                                                                 <button type="submit" class="btn btn-link text-success px-1 mb-0">
                                                                     <i
                                                                         class="material-symbols-rounded text-sm me-2">check_circle</i>
                                                                     Approve
                                                                 </button>
-                                                </form>
-                                                
+                                                            </form>
+
                                                             <button type="button"
                                                                 class="btn btn-link text-danger px-1 mb-0 reject-btn"
-                                                    data-tenant-id="{{ $tenant->id }}"
+                                                                data-tenant-id="{{ $tenant->id }}"
                                                                 data-tenant-name="{{ $tenant->name }}">
                                                                 <i class="material-symbols-rounded text-sm me-2">cancel</i>
-                                                    Reject
-                                                </button>
-                                            @endif
-                                            
+                                                                Reject
+                                                            </button>
+                                                        @elseif($tenant->status === 'approved')
+                                                            <button type="button"
+                                                                class="btn btn-link text-danger px-1 mb-0 disable-btn"
+                                                                data-tenant-id="{{ $tenant->id }}"
+                                                                data-tenant-name="{{ $tenant->name }}">
+                                                                <i class="material-symbols-rounded text-sm me-2">block</i>
+                                                                Disable
+                                                            </button>
+                                                        @endif
+
                                                         <form action="{{ route('tenants.destroy', $tenant) }}" method="POST"
                                                             class="d-inline delete-form">
-                                                @csrf
-                                                @method('DELETE')
+                                                            @csrf
+                                                            @method('DELETE')
                                                             <button type="button"
                                                                 class="btn btn-link text-danger px-1 mb-0 delete-btn">
                                                                 <i class="material-symbols-rounded text-sm me-2">delete</i>
                                                                 Delete
                                                             </button>
-                                            </form>
+                                                        </form>
                                                     </div>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
         </div>
     </main>
 
     <!-- Include modals -->
     @include('components.tenant-view-modal')
     @include('components.tenant-edit-modal')
-    
-    <!-- Reject Modal -->
-    <div class="modal fade" id="rejectModal" tabindex="-1" role="dialog" aria-labelledby="rejectModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="rejectModalLabel">Reject Tenant Application</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <p>Please provide a reason for rejecting <span id="tenantName" class="font-weight-bold"></span>'s
-                        application:</p>
-            
-            <form id="rejectForm" method="POST">
-                @csrf
-                @method('PATCH')
-                
-                        <div class="input-group input-group-static mb-4">
-                            <label for="admin_notes">Notes/Reason</label>
-                            <textarea id="admin_notes" name="admin_notes" class="form-control" rows="4" required></textarea>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn bg-gradient-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn bg-gradient-danger" id="confirmReject">Reject Application</button>
-                </div>
-            </div>
-        </div>
-                </div>
-                
-    <!-- Delete Confirmation Modal -->
-    <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="deleteModalLabel">Confirm Deletion</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <p>Are you sure you want to delete this tenant? This action cannot be undone.</p>
-                    <p>All data associated with this tenant will be permanently removed from the system.</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn bg-gradient-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn bg-gradient-danger" id="confirmDelete">Delete Tenant</button>
-                </div>
-            </div>
-        </div>
-    </div>
+    @include('components.tenant-reject-modal')
+    @include('components.tenant-disable-modal')
+    @include('components.tenant-delete-modal')
 
     <!-- Include JavaScript for tenant modals -->
     <script src="{{ asset('js/tenant-modals.js') }}"></script>
-    
+
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             // Reject functionality
@@ -242,21 +200,47 @@
             const confirmRejectBtn = document.getElementById('confirmReject');
             const tenantNameSpan = document.getElementById('tenantName');
             const rejectForm = document.getElementById('rejectForm');
-            
-            rejectButtons.forEach(button => {
-                button.addEventListener('click', function () {
-                    const tenantId = this.getAttribute('data-tenant-id');
-                    const tenantName = this.getAttribute('data-tenant-name');
-                    
-                    tenantNameSpan.textContent = tenantName;
-                    rejectForm.action = `/tenants/${tenantId}/reject`;
-                    rejectModal.show();
-                });
-            });
 
-            confirmRejectBtn.addEventListener('click', function () {
-                rejectForm.submit();
-            });
+            if (rejectButtons.length > 0 && confirmRejectBtn && rejectForm) {
+                rejectButtons.forEach(button => {
+                    button.addEventListener('click', function () {
+                        const tenantId = this.getAttribute('data-tenant-id');
+                        const tenantName = this.getAttribute('data-tenant-name');
+
+                        tenantNameSpan.textContent = tenantName;
+                        rejectForm.action = `/tenants/${tenantId}/reject`;
+                        rejectModal.show();
+                    });
+                });
+
+                confirmRejectBtn.addEventListener('click', function () {
+                    rejectForm.submit();
+                });
+            }
+
+            // Disable functionality
+            const disableModal = new bootstrap.Modal(document.getElementById('disableModal'));
+            const disableButtons = document.querySelectorAll('.disable-btn');
+            const confirmDisableBtn = document.getElementById('confirmDisable');
+            const disableTenantNameSpan = document.getElementById('disableTenantName');
+            const disableForm = document.getElementById('disableForm');
+
+            if (disableButtons.length > 0 && confirmDisableBtn && disableForm) {
+                disableButtons.forEach(button => {
+                    button.addEventListener('click', function () {
+                        const tenantId = this.getAttribute('data-tenant-id');
+                        const tenantName = this.getAttribute('data-tenant-name');
+
+                        disableTenantNameSpan.textContent = tenantName;
+                        disableForm.action = `/tenants/${tenantId}/disable`;
+                        disableModal.show();
+                    });
+                });
+
+                confirmDisableBtn.addEventListener('click', function () {
+                    disableForm.submit();
+                });
+            }
 
             // Delete functionality
             const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
@@ -270,7 +254,7 @@
                     deleteModal.show();
                 });
             });
-            
+
             confirmDeleteBtn.addEventListener('click', function () {
                 if (currentDeleteForm) {
                     currentDeleteForm.submit();

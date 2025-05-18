@@ -52,8 +52,23 @@
                                                 <span class="text-sm" id="tenant-status"></span>
                                             </p>
                                             <p class="mb-1">
+                                                <span class="text-dark font-weight-bold text-sm">Subscription:</span>
+                                                <span class="text-sm" id="tenant-subscription"></span>
+                                            </p>
+                                            <p class="mb-1">
                                                 <span class="text-dark font-weight-bold text-sm">Created:</span>
                                                 <span class="text-sm" id="tenant-created"></span>
+                                            </p>
+                                        </div>
+                                        <div class="mb-3" id="rejection-details-section" style="display: none;">
+                                            <h6 class="text-uppercase text-xs font-weight-bolder opacity-6">Rejection Details</h6>
+                                            <p class="mb-1">
+                                                <span class="text-dark font-weight-bold text-sm">Rejected At:</span>
+                                                <span class="text-sm" id="tenant-rejected"></span>
+                                            </p>
+                                            <p class="mb-1">
+                                                <span class="text-dark font-weight-bold text-sm">Rejected By:</span>
+                                                <span class="text-sm" id="tenant-rejected-by"></span>
                                             </p>
                                         </div>
                                         <div class="mb-3" id="admin-notes-section">

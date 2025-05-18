@@ -42,7 +42,7 @@ class UserController extends Controller
         $user->assignRole($roleNames);
 
          // Send password via email
-        Mail::to($user->email)->send(new UsersCredentialsMail($plainPassword));
+        Mail::to($user->email)->send(new UsersCredentialsMail($plainPassword, $user));
 
         return redirect()->route('users.index')->with('success', 'User created successfully.');
     }

@@ -7,13 +7,15 @@ use Illuminate\Support\Facades\Auth;
 use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
 use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
 use Stancl\Tenancy\Middleware\ScopeSessions;
+use App\Http\Middleware\CheckPremiumSubscription;
 use App\Http\Controllers\App\{
     ProfileController,
     UserController,
     ServiceController,
     PatientController,
     CashierController,
-    DashboardController
+    DashboardController,
+    ReportController
 };
 
 /*
@@ -61,6 +63,12 @@ Route::middleware([
         Route::group(['middleware' => ['role:admin']], function () {
             Route::get('users', [UserController::class, 'index'])->name('users.index');
             Route::resource('users', UserController::class);
+            
+            // Report routes - premium feature
+            Route::middleware([CheckPremiumSubscription::class])->group(function () {
+                Route::get('/reports', [ReportController::class, 'index'])->name('tenant.reports.index');
+                Route::post('/reports/generate', [ReportController::class, 'generate'])->name('tenant.reports.generate');
+            });
         });
 
         Route::group(['middleware' => ['role:admin']], function () {

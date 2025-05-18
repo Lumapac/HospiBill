@@ -20,12 +20,87 @@
     <!-- Material Icons -->
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <!-- Animate.css for animations -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
     <!-- CSS Files -->
     <link id="pagestyle" href="../assets/css/material-dashboard.css?v=3.2.0" rel="stylesheet" />
+    
+    <!-- Custom CSS for premium features indicators -->
+    <style>
+        .nav-item {
+            position: relative;
+        }
+        
+        .premium-badge {
+            position: absolute;
+            top: 50%;
+            right: 15px;
+            transform: translateY(-50%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #ffc107, #fd7e14);
+            border: 1.5px solid white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            z-index: 2;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link:hover .premium-badge {
+            transform: translateY(-50%) scale(1.1);
+        }
+        
+        .premium-badge i {
+            font-size: 10px !important;
+            line-height: 1;
+            color: #fff;
+        }
+        
+        .premium-feature {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .premium-feature::after {
+            content: 'Premium';
+            position: absolute;
+            top: 0.25rem;
+            right: -1.5rem;
+            transform: rotate(45deg);
+            padding: 0.15rem 1.5rem;
+            background: linear-gradient(45deg, #ffc107, #fd7e14);
+            color: white;
+            font-size: 0.6rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            z-index: 1;
+            pointer-events: none;
+        }
+        
+        .tooltip.premium-tooltip .tooltip-inner {
+            background-color: #fd7e14;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-weight: 500;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .tooltip.premium-tooltip .tooltip-arrow::before {
+            border-top-color: #fd7e14;
+        }
+        
+        #premium-feature-alert {
+            border-left: 4px solid #ffc107;
+        }
+    </style>
 </head>
 
-<body class="g-sidenav-show  bg-gray-100">
-    <aside class="sidenav navbar navbar-vertical navbar-expand-xs border-radius-lg fixed-start ms-2  bg-white my-2"
+<body class="g-sidenav-show bg-gray-100">
+    <aside class="sidenav navbar navbar-vertical navbar-expand-xs border-radius-lg fixed-start ms-2 bg-white my-2"
         id="sidenav-main">
         <div class="sidenav-header">
             <i class="fas fa-times p-3 cursor-pointer text-dark opacity-5 position-absolute end-0 top-0 d-none d-xl-none"
@@ -46,22 +121,48 @@
             <ul class="navbar-nav">
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('dashboard') ? 'active bg-gradient-dark text-white' : 'text-dark' }}" href="{{ route('dashboard') }}">
-                        <i class="material-symbols-rounded opacity-5">dashboard</i>
-                        <span class="nav-link-text ms-1">Dashboard</span>
+                        <div class="d-flex align-items-center">
+                            <i class="material-symbols-rounded opacity-5">dashboard</i>
+                            <span class="nav-link-text ms-1">Dashboard</span>
+                        </div>
                     </a>
                 </li>
 
                 @role('admin')
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('users.index') ? 'active bg-gradient-dark text-white' : 'text-dark' }}" href="{{route('users.index')}}">
-                        <i class="material-symbols-rounded opacity-5">table_view</i>
-                        <span class="nav-link-text ms-1">User</span>
+                        <div class="d-flex align-items-center">
+                            <i class="material-symbols-rounded opacity-5">table_view</i>
+                            <span class="nav-link-text ms-1">Users</span>
+                        </div>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('services.index') ? 'active bg-gradient-dark text-white' : 'text-dark' }}" href="{{route('services.index')}}">
-                        <i class="material-symbols-rounded opacity-5">receipt_long</i>
-                        <span class="nav-link-text ms-1">Services</span>
+                        <div class="d-flex align-items-center">
+                            <i class="material-symbols-rounded opacity-5">receipt_long</i>
+                            <span class="nav-link-text ms-1">Services</span>
+                        </div>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link d-flex {{ request()->routeIs('tenant.reports.*') ? 'active bg-gradient-dark text-white' : 'text-dark' }}" 
+                       href="{{ route('tenant.reports.index') }}"
+                       @if(tenant() && tenant()->subscription !== 'premium') 
+                       data-bs-toggle="tooltip" 
+                       data-bs-placement="right" 
+                       data-bs-custom-class="premium-tooltip" 
+                       title="Premium feature - Generate financial and operational reports" 
+                       @endif>
+                        <div class="d-flex align-items-center flex-grow-1">
+                            <i class="material-symbols-rounded opacity-5">summarize</i>
+                            <span class="nav-link-text ms-1">Reports</span>
+                        </div>
+                        @if(tenant() && tenant()->subscription !== 'premium')
+                        <span class="premium-badge d-flex align-items-center justify-content-center">
+                            <i class="material-symbols-rounded">crown</i>
+                        </span>
+                        @endif
                     </a>
                 </li>
                 @endrole
@@ -69,8 +170,10 @@
                 @role('doctor')
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('patient.index') ? 'active bg-gradient-dark text-white' : 'text-dark' }}" href="{{  route('patient.index') }}">
-                        <i class="material-symbols-rounded opacity-5">table_view</i>
-                        <span class="nav-link-text ms-1">Patient</span>
+                        <div class="d-flex align-items-center">
+                            <i class="material-symbols-rounded opacity-5">personal_injury</i>
+                            <span class="nav-link-text ms-1">Patients</span>
+                        </div>
                     </a>
                 </li>
                 @endrole
@@ -78,20 +181,23 @@
                 @role('cashier')
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('patient.bill') ? 'active bg-gradient-dark text-white' : 'text-dark' }}" href="{{ route('patient.bill') }}">
-                        <i class="material-symbols-rounded opacity-5">table_view</i>
-                        <span class="nav-link-text ms-1">Billing</span>
+                        <div class="d-flex align-items-center">
+                            <i class="material-symbols-rounded opacity-5">receipt</i>
+                            <span class="nav-link-text ms-1">Billing</span>
+                        </div>
                     </a>
                 </li>
                 @endrole
 
                 <li class="nav-item mt-3">
-                    <h6 class="ps-4 ms-2 text-uppercase text-xs text-dark font-weight-bolder opacity-5">Account pages
-                    </h6>
+                    <h6 class="ps-4 ms-2 text-uppercase text-xs text-dark font-weight-bolder opacity-5">Account</h6>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('profile.edit') ? 'active bg-gradient-dark text-white' : 'text-dark' }}" href="{{ route('profile.edit') }}">
-                        <i class="material-symbols-rounded opacity-5">person</i>
-                        <span class="nav-link-text ms-1">Profile</span>
+                        <div class="d-flex align-items-center">
+                            <i class="material-symbols-rounded opacity-5">person</i>
+                            <span class="nav-link-text ms-1">Profile</span>
+                        </div>
                     </a>
                 </li>
                 <li class="nav-item">
@@ -99,8 +205,10 @@
                         @csrf
                         <a class="nav-link text-dark" href="{{ route('logout') }}"
                             onclick="event.preventDefault(); document.getElementById('sidebar-logout-form').submit();">
-                            <i class="material-symbols-rounded opacity-5">logout</i>
-                            <span class="nav-link-text ms-1">Logout</span>
+                            <div class="d-flex align-items-center">
+                                <i class="material-symbols-rounded opacity-5">logout</i>
+                                <span class="nav-link-text ms-1">Logout</span>
+                            </div>
                         </a>
                     </form>
                 </li>
@@ -108,14 +216,25 @@
         </div>
     </aside>
     @yield('content')
+    
     <div class="fixed-plugin">
+        @if(tenant() && tenant()->subscription === 'free')
+        <!-- Show disabled UI configurator button with premium badge for free subscription users -->
+        <a class="fixed-plugin-button text-secondary position-fixed px-3 py-2" data-bs-toggle="tooltip" data-bs-placement="left" data-bs-custom-class="premium-tooltip" title="Available in premium plans">
+            <div class="premium-badge">
+                <i class="material-symbols-rounded">crown</i>
+            </div>
+            <i class="material-symbols-rounded py-2">settings</i>
+        </a>
+        @else
+        <!-- Regular UI configurator button for non-free subscription users -->
         <a class="fixed-plugin-button text-dark position-fixed px-3 py-2">
             <i class="material-symbols-rounded py-2">settings</i>
         </a>
         <div class="card shadow-lg">
             <div class="card-header pb-0 pt-3">
                 <div class="float-start">
-                    <h5 class="mt-3 mb-0">Material UI Configurator</h5>
+                    <h5 class="mt-3 mb-0">Page UI Configurator</h5>
                     <p>See our dashboard options.</p>
                 </div>
                 <div class="float-end mt-4">
@@ -178,28 +297,11 @@
                     </div>
                 </div>
                 <hr class="horizontal dark my-sm-4">
-                <a class="btn bg-gradient-info w-100"
-                    href="https://www.creative-tim.com/product/material-dashboard-pro">Free Download</a>
-                <a class="btn btn-outline-dark w-100"
-                    href="https://www.creative-tim.com/learning-lab/bootstrap/overview/material-dashboard">View
-                    documentation</a>
-                <div class="w-100 text-center">
-                    <a class="github-button" href="https://github.com/creativetimofficial/material-dashboard"
-                        data-icon="octicon-star" data-size="large" data-show-count="true"
-                        aria-label="Star creativetimofficial/material-dashboard on GitHub">Star</a>
-                    <h6 class="mt-3">Thank you for sharing!</h6>
-                    <a href="https://twitter.com/intent/tweet?text=Check%20Material%20UI%20Dashboard%20made%20by%20%40CreativeTim%20%23webdesign%20%23dashboard%20%23bootstrap5&amp;url=https%3A%2F%2Fwww.creative-tim.com%2Fproduct%2Fsoft-ui-dashboard"
-                        class="btn btn-dark mb-0 me-2" target="_blank">
-                        <i class="fab fa-twitter me-1" aria-hidden="true"></i> Tweet
-                    </a>
-                    <a href="https://www.facebook.com/sharer/sharer.php?u=https://www.creative-tim.com/product/material-dashboard"
-                        class="btn btn-dark mb-0 me-2" target="_blank">
-                        <i class="fab fa-facebook-square me-1" aria-hidden="true"></i> Share
-                    </a>
-                </div>
             </div>
         </div>
+        @endif
     </div>
+    
     <!--   Core JS Files   -->
     <script src={{ asset("../assets/js/core/popper.min.js") }}></script>
     <script src="../assets/js/core/bootstrap.min.js"></script>
@@ -223,6 +325,119 @@
     
     <!-- Make sure Bootstrap JS is properly loaded -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Initialize tooltips and handle free subscription limitations -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check and apply saved theme preference (dark/light mode)
+            const darkModeCheckbox = document.getElementById('dark-version');
+            if (darkModeCheckbox) {
+                // Apply saved theme on page load
+                const savedTheme = localStorage.getItem('darkMode');
+                if (savedTheme === 'dark') {
+                    document.body.classList.add('dark-version');
+                    darkModeCheckbox.checked = true;
+                    
+                    // Apply dark theme to sidebar and navbar
+                    const sidenavMain = document.getElementById('sidenav-main');
+                    if (sidenavMain) {
+                        sidenavMain.classList.remove('bg-white');
+                        sidenavMain.classList.add('bg-dark');
+                    }
+                    
+                    // Update premium badges for dark mode
+                    const premiumBadges = document.querySelectorAll('.premium-badge');
+                    premiumBadges.forEach(badge => {
+                        badge.style.borderColor = '#344767';
+                    });
+                }
+                
+                // Save preference when user changes theme
+                darkModeCheckbox.addEventListener('change', function() {
+                    if (this.checked) {
+                        localStorage.setItem('darkMode', 'dark');
+                        
+                        // Update premium badges for dark mode
+                        const premiumBadges = document.querySelectorAll('.premium-badge');
+                        premiumBadges.forEach(badge => {
+                            badge.style.borderColor = '#344767';
+                        });
+                    } else {
+                        localStorage.setItem('darkMode', 'light');
+                        
+                        // Update premium badges for light mode
+                        const premiumBadges = document.querySelectorAll('.premium-badge');
+                        premiumBadges.forEach(badge => {
+                            badge.style.borderColor = 'white';
+                        });
+                    }
+                });
+            }
+            
+            // Initialize tooltips with better styling
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl, {
+                    delay: { show: 300, hide: 100 },
+                    html: true
+                });
+            });
+            
+            // Handle UI configurator for free subscription
+            @if(tenant() && tenant()->subscription === 'free')
+            var freeSubConfigButtons = document.querySelectorAll('.fixed-plugin-button');
+            freeSubConfigButtons.forEach(function(button) {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    // Show existing tooltip if any
+                    var tooltip = bootstrap.Tooltip.getInstance(button);
+                    if (tooltip) {
+                        tooltip.show();
+                    }
+                    
+                    // Show subscription upgrade message
+                    if (!document.getElementById('premium-feature-alert')) {
+                        var alertHtml = '<div class="alert alert-warning alert-dismissible fade show d-flex align-items-center shadow-sm" role="alert" id="premium-feature-alert">' +
+                            '<span class="alert-icon me-2"><i class="material-symbols-rounded opacity-10">crown</i></span>' +
+                            '<div>' +
+                            '<strong>Premium Feature</strong><br>' +
+                            '<span class="text-sm">UI Customization is available in Standard and Premium plans</span>' +
+                            '</div>' +
+                            '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>' +
+                            '</div>';
+                        
+                        var alertContainer = document.createElement('div');
+                        alertContainer.className = 'position-fixed top-0 end-0 p-3';
+                        alertContainer.style.zIndex = '1080';
+                        alertContainer.innerHTML = alertHtml;
+                        document.body.appendChild(alertContainer);
+                        
+                        // Add animation
+                        setTimeout(function() {
+                            var alert = document.querySelector('#premium-feature-alert');
+                            if (alert) {
+                                alert.classList.add('animate__animated', 'animate__fadeInRight');
+                            }
+                        }, 10);
+                        
+                        // Automatically remove after 5 seconds
+                        setTimeout(function() {
+                            var alert = document.querySelector('#premium-feature-alert');
+                            if (alert) {
+                                alert.classList.add('animate__fadeOutRight');
+                                setTimeout(function() {
+                                    alertContainer.remove();
+                                }, 500);
+                            }
+                        }, 5000);
+                    }
+                });
+            });
+            @endif
+        });
+    </script>
 </body>
 
 </html>

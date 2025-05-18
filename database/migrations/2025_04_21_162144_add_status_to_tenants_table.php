@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::table('tenants', function (Blueprint $table) {
             // Check if status column doesn't exist before adding
             if (!Schema::hasColumn('tenants', 'status')) {
-                $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending')->after('password');
+                $table->enum('status', ['pending', 'approved', 'disabled'])->default('pending')->after('password');
             }
             
             // Add admin_notes column

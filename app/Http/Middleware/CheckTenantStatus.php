@@ -20,7 +20,11 @@ class CheckTenantStatus
             $tenant = tenant();
             
             if ($tenant->status !== 'approved') {
-                abort(403, 'Your tenant account is not active. Please contact the administrator for assistance.');
+                if ($tenant->status === 'disabled') {
+                    abort(403, 'Your tenant account has been disabled. Please contact the administrator for assistance.');
+                } else {
+                    abort(403, 'Your tenant account is not active. Please contact the administrator for assistance.');
+                }
             }
         }
 

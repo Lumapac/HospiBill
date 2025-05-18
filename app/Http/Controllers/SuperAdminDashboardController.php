@@ -22,9 +22,18 @@ class SuperAdminDashboardController extends Controller
             ->latest()
             ->take(5)
             ->get();
+            
+        // Get the 5 most recent rejected tenants
+        $rejectedTenants = Tenant::with('domains')
+            ->select('id', 'name', 'email', 'status', 'contact_person', 'phone_number', 'admin_notes', 'rejected_at', 'rejected_by')
+            ->where('status', 'rejected')
+            ->latest('rejected_at')
+            ->take(5)
+            ->get();
         
         return view('dashboard', [
             'tenants' => $recentTenants,
+            'rejectedTenants' => $rejectedTenants,
             'allTenants' => $allTenants
         ]);
     }

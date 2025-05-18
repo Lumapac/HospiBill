@@ -27,9 +27,18 @@
                     </a>
                 </li>
                 <li class="nav-item px-3 d-flex align-items-center">
-                    <a href="javascript:;" class="nav-link text-body p-0">
-                        <i class="material-symbols-rounded fixed-plugin-button-nav">settings</i>
+                    @if(tenant() && tenant()->subscription === 'free')
+                    <a href="javascript:;" class="nav-link text-secondary p-0 position-relative" data-bs-toggle="tooltip" data-bs-placement="bottom" data-bs-custom-class="premium-tooltip" title="Available in premium plans">
+                        <div class="premium-badge">
+                            <i class="material-symbols-rounded">crown</i>
+                        </div>
+                        <i class="material-symbols-rounded">settings</i>
                     </a>
+                    @else
+                    <a href="javascript:;" class="nav-link text-body p-0 fixed-plugin-button-nav">
+                        <i class="material-symbols-rounded">settings</i>
+                    </a>
+                    @endif
                 </li>
                 <li class="nav-item dropdown pe-3 d-flex align-items-center">
                     <a href="javascript:;" class="nav-link text-body p-0" id="dropdownMenuButton"

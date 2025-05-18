@@ -3,7 +3,7 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>Your HospiBill Account Credentials</title>
+    <title>Your HospiBill Application Status</title>
     <style>
         @media only screen and (max-width: 620px) {
             table.body h1 {
@@ -88,18 +88,18 @@
             }
 
             .btn-primary table td:hover {
-                background-color: #3a76f8 !important;
+                background-color: #ea4335 !important;
             }
 
             .btn-primary a:hover {
-                background-color: #3a76f8 !important;
-                border-color: #3a76f8 !important;
+                background-color: #ea4335 !important;
+                border-color: #ea4335 !important;
             }
         }
     </style>
 </head>
 <body style="background-color: #f6f6f6; font-family: sans-serif; -webkit-font-smoothing: antialiased; font-size: 14px; line-height: 1.4; margin: 0; padding: 0; -ms-text-size-adjust: 100%; -webkit-text-size-adjust: 100%;">
-    <span class="preheader" style="color: transparent; display: none; height: 0; max-height: 0; max-width: 0; opacity: 0; overflow: hidden; mso-hide: all; visibility: hidden; width: 0;">Your HospiBill account has been approved with access details.</span>
+    <span class="preheader" style="color: transparent; display: none; height: 0; max-height: 0; max-width: 0; opacity: 0; overflow: hidden; mso-hide: all; visibility: hidden; width: 0;">Your HospiBill application status update.</span>
     <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="body" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; background-color: #f6f6f6; width: 100%;" width="100%" bgcolor="#f6f6f6">
         <tr>
             <td style="font-family: sans-serif; font-size: 14px; vertical-align: top;" valign="top">&nbsp;</td>
@@ -116,32 +116,37 @@
                                     <tr>
                                         <td style="font-family: sans-serif; font-size: 14px; vertical-align: top;" valign="top">
                                             <div style="text-align: center; margin-bottom: 20px;">
-                                                <h1 style="color: #3869D4; font-size: 35px; font-weight: bold; margin: 0; margin-bottom: 15px;">Welcome to HospiBill!</h1>
-                                                <p style="color: #718096; font-size: 16px; margin-bottom: 30px;">Your hospital tenant account has been approved</p>
+                                                <h1 style="color: #dc3545; font-size: 35px; font-weight: bold; margin: 0; margin-bottom: 15px;">Application Update</h1>
+                                                <p style="color: #718096; font-size: 16px; margin-bottom: 30px;">Regarding your HospiBill tenant application</p>
                                             </div>
                                             <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; margin-bottom: 15px;">Dear {{ $tenant->contact_person }},</p>
-                                            <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; margin-bottom: 15px;">Congratulations! Your HospiBill tenant account for <strong>{{ $tenant->name }}</strong> has been approved. You can now access your hospital billing management system with the credentials below.</p>
+                                            <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; margin-bottom: 15px;">Thank you for your interest in HospiBill and for submitting an application for <strong>{{ $tenant->name }}</strong>. After careful review, we regret to inform you that we are unable to approve your application at this time.</p>
                                             
-                                            <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="credentials" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%; margin-bottom: 20px; background-color: #f8fafc; border-radius: 5px; padding: 15px;" width="100%">
+                                            @if(!empty($reason))
+                                            <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="reason" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%; margin-bottom: 20px; background-color: #f8f9fa; border-radius: 5px; padding: 15px;" width="100%">
                                                 <tr>
                                                     <td style="font-family: sans-serif;">
-                                                        <h3 style="color: #2d3748; font-size: 18px; font-weight: bold; margin-top: 0;">Your Account Details</h3>
-                                                        <p style="margin-top: 10px; margin-bottom: 5px;"><strong style="color: #4a5568;">Domain URL:</strong> <a href="http://{{ $domain }}:8000" style="color: #3869D4; text-decoration: none;">http://{{ $domain }}:8000</a></p>
-                                                        <p style="margin-top: 5px; margin-bottom: 5px;"><strong style="color: #4a5568;">Email:</strong> {{ $tenant->email }}</p>
-                                                        <p style="margin-top: 5px; margin-bottom: 5px;"><strong style="color: #4a5568;">Password:</strong> {{ $password }}</p>
+                                                        <h3 style="color: #2d3748; font-size: 18px; font-weight: bold; margin-top: 0;">Reason for Rejection</h3>
+                                                        <p style="margin-top: 5px; margin-bottom: 5px; color: #4a5568;">{{ $reason }}</p>
                                                     </td>
                                                 </tr>
                                             </table>
+                                            @endif
                                             
-                                            <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="btn btn-primary" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%; box-sizing: border-box;" width="100%">
+                                            <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; margin-bottom: 15px;">If you believe this decision was made in error or if you would like to address the concerns mentioned above, please feel free to contact our support team.</p>
+                                            
+                                            <h3 style="color: #2d3748; font-size: 18px; font-weight: bold; margin-top: 30px;">What Happens Next?</h3>
+                                            <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; margin-bottom: 15px;">You may submit a new application after addressing the issues mentioned. Our team is available to assist you with any questions or provide guidance for a successful application.</p>
+                                            
+                                            <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="btn btn-primary" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%; box-sizing: border-box; margin-top: 20px; margin-bottom: 20px;" width="100%">
                                                 <tbody>
                                                     <tr>
                                                         <td align="center" style="font-family: sans-serif; font-size: 14px; vertical-align: top; padding-bottom: 15px;" valign="top">
                                                             <table role="presentation" border="0" cellpadding="0" cellspacing="0" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: auto;">
                                                                 <tbody>
                                                                     <tr>
-                                                                        <td style="font-family: sans-serif; font-size: 14px; vertical-align: top; background-color: #3869D4; border-radius: 5px; text-align: center;" valign="top" bgcolor="#3869D4" align="center">
-                                                                            <a href="http://{{ $domain }}:8000" target="_blank" style="display: inline-block; color: #ffffff; background-color: #3869D4; border: solid 1px #3869D4; border-radius: 5px; box-sizing: border-box; cursor: pointer; text-decoration: none; font-size: 14px; font-weight: bold; margin: 0; padding: 12px 25px; text-transform: capitalize; border-color: #3869D4;">Login to Your Account</a>
+                                                                        <td style="font-family: sans-serif; font-size: 14px; vertical-align: top; background-color: #dc3545; border-radius: 5px; text-align: center;" valign="top" bgcolor="#dc3545" align="center">
+                                                                            <a href="http://{{ config('app.domain') }}" target="_blank" style="display: inline-block; color: #ffffff; background-color: #dc3545; border: solid 1px #dc3545; border-radius: 5px; box-sizing: border-box; cursor: pointer; text-decoration: none; font-size: 14px; font-weight: bold; margin: 0; padding: 12px 25px; text-transform: capitalize; border-color: #dc3545;">Contact Support</a>
                                                                         </td>
                                                                     </tr>
                                                                 </tbody>
@@ -151,18 +156,7 @@
                                                 </tbody>
                                             </table>
                                             
-                                            <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; margin-bottom: 15px;">For security reasons, we recommend changing your password after your first login.</p>
-                                            
-                                            <h3 style="color: #2d3748; font-size: 18px; font-weight: bold; margin-top: 30px;">Getting Started</h3>
-                                            <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; margin-bottom: 15px;">Here's what you can do with your HospiBill account:</p>
-                                            <ul style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; margin-bottom: 15px; padding-left: 20px;">
-                                                <li style="margin-bottom: 10px;">Manage patient billing information</li>
-                                                <li style="margin-bottom: 10px;">Create and send invoices</li>
-                                                <li style="margin-bottom: 10px;">Track payments and outstanding balances</li>
-                                                <li style="margin-bottom: 10px;">Generate financial reports</li>
-                                            </ul>
-                                            
-                                            <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; margin-top: 30px; margin-bottom: 15px;">If you have any questions or need assistance, please don't hesitate to contact our support team.</p>
+                                            <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; margin-top: 30px; margin-bottom: 15px;">We appreciate your understanding and hope to have the opportunity to work with you in the future.</p>
                                             
                                             <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; margin-bottom: 15px;">Best regards,<br>The HospiBill Team</p>
                                         </td>
@@ -193,4 +187,4 @@
         </tr>
     </table>
 </body>
-</html>
+</html> 

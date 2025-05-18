@@ -53,10 +53,23 @@
                                 <select class="form-control" id="edit-status" name="status" required>
                                     <option value="pending">Pending</option>
                                     <option value="approved">Approved</option>
-                                    <option value="rejected">Rejected</option>
+                                    <option value="disabled">Disabled</option>
                                 </select>
                                 <p class="text-sm text-secondary mt-1">
                                     Changing status to "Approved" will generate and send new credentials to the tenant.
+                                </p>
+                            </div>
+                            
+                            <!-- Subscription -->
+                            <div class="input-group input-group-static mb-4">
+                                <label for="edit-subscription" class="ms-0">Subscription</label>
+                                <select class="form-control" id="edit-subscription" name="subscription" required>
+                                    <option value="free">Free</option>
+                                    <option value="standard">Standard</option>
+                                    <option value="premium">Premium</option>
+                                </select>
+                                <p class="text-sm text-secondary mt-1">
+                                    Select the subscription plan for this tenant.
                                 </p>
                             </div>
                             

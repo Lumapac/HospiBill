@@ -6,22 +6,20 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
-class TenantCredentialsMail extends Mailable
+class TenantRejectionMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $password;
     public $tenant;
-    public $domain;
+    public $reason;
 
     /**
      * Create a new message instance.
      */
-    public function __construct($password, $tenant, $domain)
+    public function __construct($tenant, $reason = '')
     {
-        $this->password = $password;
         $this->tenant = $tenant;
-        $this->domain = $domain;
+        $this->reason = $reason;
     }
 
     /**
@@ -29,12 +27,11 @@ class TenantCredentialsMail extends Mailable
      */
     public function build()
     {
-        return $this->subject('Welcome to HospiBill - Your Account is Approved!')
-            ->view('emails.tenant-generated-password')
+        return $this->subject('Important: Update on Your HospiBill Application')
+            ->view('emails.tenant-application-rejected')
             ->with([
-                'password' => $this->password,
                 'tenant' => $this->tenant,
-                'domain' => $this->domain,
+                'reason' => $this->reason,
             ]);
     }
 
@@ -47,4 +44,4 @@ class TenantCredentialsMail extends Mailable
     {
         return [];
     }
-}
+} 

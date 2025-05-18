@@ -11,13 +11,19 @@ class UsersCredentialsMail extends Mailable
     use Queueable, SerializesModels;
 
     public $password;
+    public $user;
+    public $tenant;
+    public $domain;
 
     /**
      * Create a new message instance.
      */
-    public function __construct($password)
+    public function __construct($password, $user)
     {
         $this->password = $password;
+        $this->user = $user;
+        $this->tenant = tenant() ? tenant() : null;
+        $this->domain = tenant() ? tenant()->domains->first()->domain : config('app.url');
     }
 
     /**
@@ -25,8 +31,16 @@ class UsersCredentialsMail extends Mailable
      */
     public function build()
     {
-        return $this->subject('Your Account Credentials')
-            ->view('emails.user-generated-password');
+        $tenantName = $this->tenant ? $this->tenant->name : 'HospiBill';
+        
+        return $this->subject("Welcome to {$tenantName} - Your Account Credentials")
+            ->view('emails.user-generated-password')
+            ->with([
+                'password' => $this->password,
+                'user' => $this->user,
+                'tenant' => $this->tenant,
+                'domain' => $this->domain
+            ]);
     }
     /**
      * Get the attachments for the message.

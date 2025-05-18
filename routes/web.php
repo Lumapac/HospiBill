@@ -32,7 +32,11 @@ Route::middleware(['auth'])->group(function () {
     
     // Tenant approval/rejection routes
     Route::patch('/tenants/{tenant}/approve', [TenantStatusController::class, 'approve'])->name('tenants.approve');
+    Route::patch('/tenants/{tenant}/disable', [TenantStatusController::class, 'disable'])->name('tenants.disable');
     Route::patch('/tenants/{tenant}/reject', [TenantStatusController::class, 'reject'])->name('tenants.reject');
+    
+    // Tenant subscription route
+    Route::patch('/tenants/{tenant}/subscription', [TenantController::class, 'updateSubscription'])->name('tenants.update.subscription');
 });
 
 // Report routes

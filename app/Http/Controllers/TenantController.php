@@ -54,7 +54,8 @@ class TenantController extends Controller
             'email' => 'required|email|max:255|unique:tenants,email,' . $tenant->id,
             'contact_person' => 'required|string|max:255',
             'phone_number' => 'required|string|max:20',
-            'status' => 'required|in:pending,approved,rejected',
+            'status' => 'required|in:pending,approved,disabled',
+            'subscription' => 'required|in:free,standard,premium',
             'admin_notes' => 'nullable|string',
         ]);
 
@@ -64,7 +65,11 @@ class TenantController extends Controller
         if ($request->status === 'approved' && $tenant->wasChanged('status') && $tenant->getOriginal('status') !== 'approved') {
             // Generate a new password if not provided
             $plainPassword = Str::random(10);
-            $tenant->update(['password' => bcrypt($plainPassword)]);
+            $tenant->update([
+                'password' => bcrypt($plainPassword),
+                'approved_at' => now(),
+                'approved_by' => auth()->user()->name
+            ]);
             
             // Find the domain
             $domain = $tenant->domains()->first();
@@ -84,6 +89,25 @@ class TenantController extends Controller
         }
 
         return redirect()->route('tenants.index')->with('success', 'Tenant updated successfully.');
+    }
+
+    /**
+     * Update the tenant's subscription.
+     */
+    public function updateSubscription(Request $request, Tenant $tenant)
+    {
+        // Don't allow subscription updates for rejected tenants
+        if ($tenant->status === 'rejected') {
+            return redirect()->route('tenants.index')->with('info', 'Cannot update subscription for rejected tenants.');
+        }
+        
+        $validatedData = $request->validate([
+            'subscription' => 'required|in:free,standard,premium',
+        ]);
+
+        $tenant->update($validatedData);
+
+        return redirect()->route('tenants.index')->with('success', 'Tenant subscription updated successfully.');
     }
 
     /**

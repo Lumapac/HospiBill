@@ -111,6 +111,12 @@ class PatientController extends Controller
      */
     public function destroy(Patient $patient)
     {
+        // Check if the patient has any bills
+        if ($patient->bills()->exists()) {
+            return redirect()->route('patient.index')
+                ->with('error', 'This patient cannot be deleted because they have billing records associated with their account.');
+        }
+
         $patient->delete();
         return redirect()->route('patient.index')
             ->with('success', 'Patient deleted successfully.');
