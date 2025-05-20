@@ -14,6 +14,8 @@ class BillCreatedMail extends Mailable
 
     public $bill;
     public $patient;
+    public $tenant;
+    public $domain;
 
     /**
      * Create a new message instance.
@@ -22,6 +24,8 @@ class BillCreatedMail extends Mailable
     {
         $this->bill = $bill;
         $this->patient = $bill->patient;
+        $this->tenant = tenant() ? tenant() : null;
+        $this->domain = tenant() ? tenant()->domains->first()->domain : config('app.url');
     }
 
     /**
@@ -32,11 +36,15 @@ class BillCreatedMail extends Mailable
         // Generate PDF using our PdfService
         $pdfContent = PdfService::generateBillPdf($this->bill);
         
-        return $this->subject('Your Bill #' . $this->bill->bill_number)
+        $tenantName = $this->tenant ? $this->tenant->name : 'HospiBill';
+        
+        return $this->subject('Your Bill #' . $this->bill->bill_number . ' from ' . $tenantName)
             ->view('emails.bill-created')
             ->with([
                 'bill' => $this->bill,
                 'patient' => $this->patient,
+                'tenant' => $this->tenant,
+                'domain' => $this->domain
             ])
             ->attachData($pdfContent, 'Bill_' . $this->bill->bill_number . '.pdf', [
                 'mime' => 'application/pdf',

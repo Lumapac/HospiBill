@@ -16,6 +16,8 @@ class PaymentConfirmationMail extends Mailable
     public $bill;
     public $patient;
     public $payment;
+    public $tenant;
+    public $domain;
 
     /**
      * Create a new message instance.
@@ -25,6 +27,8 @@ class PaymentConfirmationMail extends Mailable
         $this->bill = $bill;
         $this->patient = $bill->patient;
         $this->payment = $payment;
+        $this->tenant = tenant() ? tenant() : null;
+        $this->domain = tenant() ? tenant()->domains->first()->domain : config('app.url');
     }
 
     /**
@@ -38,12 +42,16 @@ class PaymentConfirmationMail extends Mailable
         // Generate PDF using our PdfService
         $pdfContent = PdfService::generateBillPdf($this->bill);
         
-        return $this->subject('Payment Confirmation for Bill #' . $this->bill->bill_number)
+        $tenantName = $this->tenant ? $this->tenant->name : 'HospiBill';
+        
+        return $this->subject('Payment Confirmation for Bill #' . $this->bill->bill_number . ' from ' . $tenantName)
             ->view('emails.payment-confirmation')
             ->with([
                 'bill' => $this->bill,
                 'patient' => $this->patient,
                 'payment' => $this->payment,
+                'tenant' => $this->tenant,
+                'domain' => $this->domain
             ])
             ->attachData($pdfContent, 'Updated_Bill_' . $this->bill->bill_number . '.pdf', [
                 'mime' => 'application/pdf',

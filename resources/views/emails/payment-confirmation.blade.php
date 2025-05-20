@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Payment Confirmation - HospiBill</title>
+    <title>Payment Confirmation from {{ $tenant ? $tenant->name : 'HospiBill' }}</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -31,11 +31,10 @@
             color: #3366cc;
         }
         .payment-info {
-            background-color: #f0f7ff;
+            background-color: #f9f9f9;
             padding: 15px;
             border-radius: 5px;
             margin: 20px 0;
-            border-left: 4px solid #3366cc;
         }
         .bill-info {
             background-color: #f9f9f9;
@@ -43,29 +42,30 @@
             border-radius: 5px;
             margin: 20px 0;
         }
-        .success-message {
-            color: #28a745;
-            font-weight: bold;
-        }
         .payment-table {
             width: 100%;
             border-collapse: collapse;
-            margin: 15px 0;
+            margin: 20px 0;
         }
-        .payment-table th, .payment-table td {
-            border: 1px solid #ddd;
+        .payment-table th,
+        .payment-table td {
             padding: 8px;
             text-align: left;
+            border-bottom: 1px solid #ddd;
         }
         .payment-table th {
-            background-color: #f2f2f2;
+            background-color: #f5f5f5;
+        }
+        .success-message {
+            color: #28a745;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>HospiBill</h1>
+            <h1>{{ $tenant ? $tenant->name : 'HospiBill' }}</h1>
         </div>
         
         <div class="content">
@@ -125,16 +125,16 @@
             
             <p>We have attached an updated bill to this email which includes your recent payment and payment history.</p>
             
-            <p>For any questions regarding your bill, please contact our billing department at billing@hospibill.com or call us at (123) 456-7890.</p>
+            <p>For any questions regarding your bill, please contact our billing department at billing@{{ $domain }} or call us at (123) 456-7890.</p>
             
             <p>Thank you for choosing our services.</p>
             
             <p>Sincerely,<br>
-            The HospiBill Team</p>
+            The {{ $tenant ? $tenant->name : 'HospiBill' }} Team</p>
         </div>
         
         <div class="footer">
-            <p>&copy; {{ date('Y') }} HospiBill. All rights reserved.</p>
+            <p>&copy; {{ date('Y') }} {{ $tenant ? $tenant->name : 'HospiBill' }}. All rights reserved.</p>
             <p>This is an automated email. Please do not reply to this email address.</p>
         </div>
     </div>

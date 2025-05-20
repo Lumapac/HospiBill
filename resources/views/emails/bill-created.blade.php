@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Your Bill From HospiBill</title>
+    <title>Your Bill From {{ $tenant ? $tenant->name : 'HospiBill' }}</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -41,7 +41,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>HospiBill</h1>
+            <h1>{{ $tenant ? $tenant->name : 'HospiBill' }}</h1>
         </div>
         
         <div class="content">
@@ -56,16 +56,16 @@
                 <p><strong>Due Date:</strong> {{ $bill->due_date->format('F d, Y') }}</p>
             </div>
             
-            <p>For any questions regarding your bill, please contact our billing department at billing@hospibill.com or call us at (123) 456-7890.</p>
+            <p>For any questions regarding your bill, please contact our billing department at billing@{{ $domain }} or call us at (123) 456-7890.</p>
             
             <p>Thank you for choosing our services.</p>
             
             <p>Sincerely,<br>
-            The HospiBill Team</p>
+            The {{ $tenant ? $tenant->name : 'HospiBill' }} Team</p>
         </div>
         
         <div class="footer">
-            <p>&copy; {{ date('Y') }} HospiBill. All rights reserved.</p>
+            <p>&copy; {{ date('Y') }} {{ $tenant ? $tenant->name : 'HospiBill' }}. All rights reserved.</p>
             <p>This is an automated email. Please do not reply to this email address.</p>
         </div>
     </div>

@@ -26,8 +26,24 @@ class PdfService
         // Create new Dompdf instance
         $dompdf = new Dompdf($options);
         
+        // Get tenant information
+        $tenant = tenant() ? tenant() : null;
+        $domain = tenant() ? tenant()->domains->first()->domain : config('app.url');
+        
+        // Load the bill with its relationships
+        $bill->load(['patient', 'service', 'payments.cashier']);
+        
+        // Get the latest cashier who processed a payment
+        $latestPayment = $bill->payments->sortByDesc('created_at')->first();
+        $cashier = $latestPayment ? $latestPayment->cashier : null;
+        
         // Load HTML content from view
-        $html = view('pdfs.bill', ['bill' => $bill])->render();
+        $html = view('pdfs.bill', [
+            'bill' => $bill,
+            'tenant' => $tenant,
+            'domain' => $domain,
+            'cashier' => $cashier
+        ])->render();
         
         // Load HTML to Dompdf
         $dompdf->loadHtml($html, 'UTF-8');
